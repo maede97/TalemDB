@@ -30,8 +30,6 @@ class MainApplication(tk.Frame):
         self.mapp = None
         self.kapp = None
 
-        updatechecker.check_for_updates()
-
     def donothing(self):
         pass
 
