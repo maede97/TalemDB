@@ -1,4 +1,5 @@
 from person import Person
+from database import DataBase
 
 class Tests:
     def test_person_creation(self):
@@ -8,3 +9,8 @@ class Tests:
         assert(p1.mitglied == False)
         p1.setKunde(True)
         assert(p1.kunde == True)
+    def test_database(self):
+        db = DataBase()
+        assert(len(db.getKunden()) <= len(db.getPersonen()))
+        assert(len(db.getMitglieder()) <= len(db.getPersonen()))
+    

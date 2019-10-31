@@ -1,9 +1,10 @@
 import sqlite3
 from person import Person
+import config
 
 class DataBase:
     def __init__(self):
-        self.conn = sqlite3.connect('database.db')
+        self.conn = sqlite3.connect(config.DATABASE)
         self.cursor = self.conn.cursor()
 
         self.cursor.execute("CREATE TABLE IF NOT EXISTS personen(id INTEGER PRIMARY KEY, vorname TEXT,nachname TEXT,adresse TEXT,plz INTEGER,ort TEXT,land TEXT DEFAULT 'CH', email TEXT, telefon TEXT)")

@@ -21,13 +21,16 @@ class PersonenWindow:
         scrollbar.config(command=self.listNodes.yview)
         scrollbar.pack(side="right",fill="y")
 
-        self.listNodes.bind('<<ListboxSelect>>', self.onSelect)
+        #self.listNodes.bind('<<ListboxSelect>>', self.onSelect)
+        self.listNodes.bind('<Double-Button>', self.onSelect)
 
         self.listNodes.config(yscrollcommand=scrollbar.set)
 
         self.loadListBox()
         
         self.frame.pack()
+
+        # TODO bind escape key to all windows
         
     def destroy(self):
         self.master.destroy()
@@ -52,21 +55,46 @@ class PersonenWindow:
         self.master.destroy()
 
     def insert(self):
-        if (self.vorname_field.get() == "" or self.nachname_field.get() == ""):
-            # TODO check other fields as well
-            # TODO add set focus on empty field
+        if(not self.__check_for_empty__()):
             return
-        
+
         p = Person(self.vorname_field.get(), self.nachname_field.get(), self.adresse_field.get(), self.plz_field.get(), self.ort_field.get(), self.land_field.get(), self.email_field.get(), self.telefon_field.get())
         
         self.dbHandler.insertPerson(p, self.kunden_check_var.get(), self.mitglieder_check_var.get())
         self.window.destroy()
-
-        # reload this listbox
         self.loadListBox()
+    
+    def __check_for_empty__(self):
+        if (self.vorname_field.get() == ""):
+            self.vorname_field.focus_set()
+            return False
+        elif(self.nachname_field.get() == ""):
+            self.nachname_field.focus_set()
+            return False
+        elif(self.adresse_field.get() == ""):
+            self.adresse_field.focus_set()
+            return False
+        elif(self.plz_field.get() == ""):
+            self.plz_field.focus_set()
+            return False
+        elif(self.ort_field.get() == ""):
+            self.ort_field.focus_set()
+            return False
+        elif(self.land_field.get() == ""):
+            self.land_field.focus_set()
+            return False
+        elif(self.email_field.get() == ""):
+            self.email_field.focus_set()
+            return False
+        elif(self.telefon_field.get() == ""):
+            self.telefon_field.focus_set()
+            return False
+        else:
+            return True
 
     def update(self):
-        # TODO check for empty variables
+        if(not self.__check_for_empty__()):
+            return
         p = Person(self.vorname_field.get(), self.nachname_field.get(), self.adresse_field.get(), self.plz_field.get(), self.ort_field.get(), self.land_field.get(), self.email_field.get(), self.telefon_field.get())
         p.setID(self.curr_id)
         self.dbHandler.updatePerson(p, self.kunden_check_var.get(), self.mitglieder_check_var.get())
@@ -119,9 +147,6 @@ class PersonenWindow:
         self.kunden_check = tk.Checkbutton(self.window, text="Kunde",variable=self.kunden_check_var)
         self.mitglieder_check = tk.Checkbutton(self.window, text="Mitglied", variable=self.mitglieder_check_var)
 
-        self.vorname_field.bind("<Return>",self.nachname_field.focus_set)
-        # TODO bind returns to next field
-
         self.vorname_field.grid(row=1,column=1, ipadx="100")
         self.nachname_field.grid(row=2,column=1,ipadx="100")
         self.adresse_field.grid(row=3,column=1,ipadx="100")
@@ -136,6 +161,8 @@ class PersonenWindow:
         submit = tk.Button(self.window, text="Speichern", command=self.update)
 
         submit.grid(row=11,column=1)
+
+        self.vorname_field.focus_set() # set focus to first field
 
     def neue_person(self):
         self.window = tk.Toplevel(self.master)
@@ -172,9 +199,6 @@ class PersonenWindow:
         self.mitglieder_check_var = tk.BooleanVar()
         self.kunden_check = tk.Checkbutton(self.window, text="Kunde",variable=self.kunden_check_var)
         self.mitglieder_check = tk.Checkbutton(self.window, text="Mitglied", variable=self.mitglieder_check_var)
-
-        self.vorname_field.bind("<Return>",self.nachname_field.focus_set)
-        # TODO bind returns to next field
 
         self.vorname_field.grid(row=1,column=1, ipadx="100")
         self.nachname_field.grid(row=2,column=1,ipadx="100")
