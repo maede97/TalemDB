@@ -23,7 +23,7 @@ jobs:
         pyinstaller mainWindows.spec
     - name: ZIP binary
       run: |
-        Compress-Archive -Path ${{ github.workspace }}\dist\* -CompressionLevel Optimal -DestinationPath ${{ github.workspace }}\${{ github.ref }}.zip
+        Compress-Archive -Path ${{ github.workspace }}\dist\* -CompressionLevel Optimal -DestinationPath ${{ github.workspace }}\${{ github.ref:10 }}.zip
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1.0.0
