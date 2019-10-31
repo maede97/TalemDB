@@ -23,8 +23,8 @@ class MainApplication(tk.Frame):
 
         self.dbHandler = DataBase()
 
-        self.dbHandler.dropAll()
-        self.dbHandler.insertTestData()
+        #self.dbHandler.dropAll()
+        #self.dbHandler.insertTestData()
 
         self.papp = None
         self.mapp = None
