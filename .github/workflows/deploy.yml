@@ -22,7 +22,7 @@ jobs:
       run: |
         pyinstaller mainWindows.spec
     - name: Set env
-        run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
+        run: echo ::set-env name=RELEASE_VERSION::$(echo ${github.ref:10})
     - name: ZIP binary
       run: |
         Compress-Archive -Path ${{ github.workspace }}\dist\* -CompressionLevel Optimal -DestinationPath ${{ github.workspace }}\$RELEASE_VERSION.zip
