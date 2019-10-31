@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ## [Unreleased]
+
+## [v1.2]
 ### Added
 - Update Button Frame
 - Update Checker now copyies database to new folder
@@ -12,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 ### Changed
 - Update Checker improved
 
-## [1.1] - 2019-10-31
+## [v1.1] - 2019-10-31
 ### Added
 - Update Checker
 
@@ -20,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 - Focus handling improved
 - Edit Person on double click
 
-## [1.0] - 2019-10-31
+## [v1.0] - 2019-10-31
 ### Added
 - Simple Functionality
 - Database resets on startup
@@ -34,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 ### Removed
 - database.db
 
-[Unreleased]: https://github.com/maede97/TalemDB/compare/v1.1...HEAD
-[1.1]: https://github.com/maede97/TalemDB/releases/tag/v1....v1.1
-[1.0]: https://github.com/maede97/TalemDB/releases/tag/v1.0
+[Unreleased]: https://github.com/maede97/TalemDB/compare/v1.2...HEAD
+[v1.2]: https://github.com/maede97/TalemDB/releases/tag/v1.1....v1.2
+[v1.1]: https://github.com/maede97/TalemDB/releases/tag/v1....v1.1
+[v1.0]: https://github.com/maede97/TalemDB/releases/tag/v1.0
