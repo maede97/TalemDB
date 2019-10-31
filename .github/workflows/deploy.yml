@@ -41,6 +41,6 @@ jobs:
         GIHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github_workspace }}\${{ github_ref }}.zip
-          asset_name: ${{ github.ref }}.zip
-          asset_content_type: application/zip
+        asset_path: ${{ github_workspace }}\${{ github_ref }}.zip
+        asset_name: ${{ github.ref }}.zip
+        asset_content_type: application/zip
