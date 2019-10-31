@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
-## [Unreleased]
+## Unreleased
+
+## [v1.2.1]
+### Changed
+- Keep data in database
 
 ## [v1.2]
 ### Added
@@ -36,7 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 ### Removed
 - database.db
 
-[Unreleased]: https://github.com/maede97/TalemDB/compare/v1.2...HEAD
-[v1.2]: https://github.com/maede97/TalemDB/releases/tag/v1.1....v1.2
-[v1.1]: https://github.com/maede97/TalemDB/releases/tag/v1....v1.1
+[Unreleased]: https://github.com/maede97/TalemDB/compare/v1.2.1...HEAD
+[v1.2.1]: https://github.com/maede97/TalemDB/releases/tag/v1.2...v1.2.1
+[v1.2]: https://github.com/maede97/TalemDB/releases/tag/v1.1...v1.2
+[v1.1]: https://github.com/maede97/TalemDB/releases/tag/v1.0...v1.1
 [v1.0]: https://github.com/maede97/TalemDB/releases/tag/v1.0
