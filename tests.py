@@ -1,6 +1,8 @@
 from person import Person
 from database import DataBase
 
+# Test class, to use with pytest -q tests.py
+
 class Tests:
     def test_person_creation(self):
         p1 = Person("M","B","Adresse","8000","Zürich","CH","email","Telefon")

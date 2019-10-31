@@ -7,6 +7,7 @@ import tkinter as tk
 from personenwindow import *
 from mitgliederwindow import *
 from kundenwindow import *
+import updatechecker
 
 class MainApplication(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -29,6 +30,8 @@ class MainApplication(tk.Frame):
         self.mapp = None
         self.kapp = None
 
+        updatechecker.check_for_updates()
+
     def donothing(self):
         pass
 
@@ -45,6 +48,7 @@ class MainApplication(tk.Frame):
         helpmenu = tk.Menu(menubar, tearoff=0)
         helpmenu.add_command(label="Help Index", command=self.donothing)
         helpmenu.add_command(label="Über...", command=self.donothing)
+        helpmenu.add_command(label="Updates suchen", command=updatechecker.check_for_updates)
         menubar.add_cascade(label="Hilfe", menu=helpmenu)
         self.parent.config(menu=menubar)
     def showPersonen(self):
