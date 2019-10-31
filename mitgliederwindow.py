@@ -28,8 +28,9 @@ class MitgliederWindow:
         self.loadListBox()
         
         self.frame.pack()
+        self.master.bind("<Escape>",self.destroy)
 
-    def destroy(self):
+    def destroy(self,e=None):
         self.master.destroy()
 
     def onSelect(self, evt):

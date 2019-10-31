@@ -30,6 +30,10 @@ class MainApplication(tk.Frame):
         self.mapp = None
         self.kapp = None
 
+        self.parent.bind("<Escape>",self.close)
+    def close(self,e=None):
+        exit()
+
     def donothing(self):
         pass
 
@@ -46,9 +50,38 @@ class MainApplication(tk.Frame):
         helpmenu = tk.Menu(menubar, tearoff=0)
         helpmenu.add_command(label="Help Index", command=self.donothing)
         helpmenu.add_command(label="Über...", command=self.donothing)
-        helpmenu.add_command(label="Updates suchen", command=updatechecker.check_for_updates)
+        helpmenu.add_command(label="Updates suchen", command=self.checkUpdates)
         menubar.add_cascade(label="Hilfe", menu=helpmenu)
         self.parent.config(menu=menubar)
+    def downloadUpdates(self):
+        ret = updatechecker.download_and_export_updates()
+        if(ret):
+            self.label.configure(text="Erfolgreich heruntergeladen.\nBitte starte das Program aus dem neuen Ordner neu.")
+        else:
+            self.label.configure(text="Ein Fehler ist aufgetreten.")
+    def checkUpdates(self):
+        self.newWindow = tk.Toplevel(self.master)
+        self.newWindow.geometry("500x300")
+        self.newWindow.title("Updates suchen")
+        self.label = tk.Label(self.newWindow, text="Stelle Verbindung mit Server her...")
+        self.label.pack()
+
+        ret = updatechecker.check_for_updates()
+        if(ret == None):
+            print("An error occured")
+            self.label.configure(text="Ein Fehler ist aufgetreten.")
+            tk.Button(self.newWindow, text="Schliessen",command=self.newWindow.destroy).pack()
+
+        elif(ret):
+            print("No update was found")
+            self.label.configure(text="Keine Updates gefunden.")
+            tk.Button(self.newWindow, text="Schliessen",command=self.newWindow.destroy).pack()
+
+        else:
+            tk.Button(self.newWindow, text="Update herunterladen",command=self.downloadUpdates).pack()
+            self.label.configure(text="Ein Update wurde gefunden.\nJetzt herunterladen?")
+            tk.Button(self.newWindow, text="Schliessen",command=self.newWindow.destroy).pack()
+        self.newWindow.bind("<Escape>",lambda e: self.newWindow.destroy())
     def showPersonen(self):
         self.newWindow = tk.Toplevel(self.master)
         if(not self.papp):

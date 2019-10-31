@@ -29,7 +29,9 @@ class KundenWindow:
         
         self.frame.pack()
 
-    def destroy(self):
+        self.master.bind("<Escape>",self.destroy)
+
+    def destroy(self,e=None):
         self.master.destroy()
 
     def onSelect(self, evt):

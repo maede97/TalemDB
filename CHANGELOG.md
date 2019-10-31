@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ## [Unreleased]
+### Added
+- Update Button Frame
+- Update Checker now copyies database to new folder
+- Escape Button to close frames
 
+### Changed
+- Update Checker improved
 
 ## [1.1] - 2019-10-31
 ### Added

@@ -30,9 +30,9 @@ class PersonenWindow:
         
         self.frame.pack()
 
-        # TODO bind escape key to all windows
+        self.master.bind("<Escape>",self.destroy)
         
-    def destroy(self):
+    def destroy(self,e=None):
         self.master.destroy()
 
     def onSelect(self, evt):
@@ -163,6 +163,7 @@ class PersonenWindow:
         submit.grid(row=11,column=1)
 
         self.vorname_field.focus_set() # set focus to first field
+        self.window.bind("<Escape>",lambda e: self.window.destroy())
 
     def neue_person(self):
         self.window = tk.Toplevel(self.master)
@@ -216,3 +217,4 @@ class PersonenWindow:
         submit.grid(row=11,column=1)
 
         self.vorname_field.focus_set() # set focus to first field
+        self.window.bind("<Escape>",lambda e: self.window.destroy())
