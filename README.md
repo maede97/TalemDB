@@ -1,5 +1,7 @@
 # TalemDB
 
+[![Actions Status](https://github.com/maede97/TalemDB/workflows/TalemCI/badge.svg)](https://github.com/maede97/TalemDB/actions)
+
 Datenbank-Tool für Talem
 
 ## Dependencies
