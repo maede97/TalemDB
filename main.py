@@ -18,13 +18,9 @@ class MainApplication(tk.Frame):
 
         self.addMenubar()
 
-        # tk.Button(self, text="Bla",width=25).pack()
         self.parent.geometry("500x400")
 
         self.dbHandler = DataBase()
-
-        #self.dbHandler.dropAll()
-        #self.dbHandler.insertTestData()
 
         self.papp = None
         self.mapp = None
@@ -79,7 +75,7 @@ class MainApplication(tk.Frame):
 
         else:
             tk.Button(self.newWindow, text="Update herunterladen",command=self.downloadUpdates).pack()
-            self.label.configure(text="Ein Update wurde gefunden.\nJetzt herunterladen?")
+            self.label.configure(text="Ein Update wurde gefunden.\nJetzt herunterladen?\nAchtung:\nDies kann eine Weile dauern!")
             tk.Button(self.newWindow, text="Schliessen",command=self.newWindow.destroy).pack()
         self.newWindow.bind("<Escape>",lambda e: self.newWindow.destroy())
     def showPersonen(self):

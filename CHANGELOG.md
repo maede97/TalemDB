@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ## Unreleased
 
+## [v1.2.1.1]
+### Changed
+- Hotfix version number in config
+
 ## [v1.2.1]
 ### Changed
 - Keep data in database
@@ -40,7 +44,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 ### Removed
 - database.db
 
-[Unreleased]: https://github.com/maede97/TalemDB/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/maede97/TalemDB/compare/v1.2.1.1...HEAD
+[v1.2.1.1]: https://github.com/maede97/TalemDB/releases/tag/v1.2.1...v1.2.1.1
 [v1.2.1]: https://github.com/maede97/TalemDB/releases/tag/v1.2...v1.2.1
 [v1.2]: https://github.com/maede97/TalemDB/releases/tag/v1.1...v1.2
 [v1.1]: https://github.com/maede97/TalemDB/releases/tag/v1.0...v1.1
