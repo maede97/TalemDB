@@ -104,3 +104,6 @@ venv.bak/
 
 # database
 *.db
+
+# vscode
+.vscode/
