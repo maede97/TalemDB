@@ -10,6 +10,7 @@ class PersonenWindow:
         self.dbHandler = dbHandler
 
         self.master.title("TalemDB | Personen")
+        self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.png'))
         self.frame = tk.Frame(self.master)
 
         tk.Button(self.master,text="Neue Person erfassen",width=25,command=self.neue_person).pack()
@@ -111,6 +112,7 @@ class PersonenWindow:
         p = self.dbHandler.getPersonByID(id)
         self.curr_id = id
         self.window = tk.Toplevel(self.master)
+        self.window.tk.call('wm', 'iconphoto', self.window._w, tk.PhotoImage(file='logo.png'))
         heading = tk.Label(self.window, text="Person bearbeiten")
         vorname_lb = tk.Label(self.window, text="Vorname")
         nachname_lb = tk.Label(self.window, text="Nachname")
@@ -173,6 +175,7 @@ class PersonenWindow:
 
     def neue_person(self):
         self.window = tk.Toplevel(self.master)
+        self.window.tk.call('wm', 'iconphoto', self.window._w, tk.PhotoImage(file='logo.png'))
         heading = tk.Label(self.window, text="Neue Person erfassen")
         vorname_lb = tk.Label(self.window, text="Vorname")
         nachname_lb = tk.Label(self.window, text="Nachname")

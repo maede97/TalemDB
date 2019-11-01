@@ -9,6 +9,7 @@ class MitgliederWindow:
         self.dbHandler = dbHandler
 
         self.master.title("TalemDB | Mitglieder")
+        self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.png'))
         self.frame = tk.Frame(self.master)
 
         #tk.Button(self.master,text="Neue Person erfassen",width=25,command=self.neue_person).pack()

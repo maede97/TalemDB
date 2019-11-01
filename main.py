@@ -117,5 +117,6 @@ class MainApplication(tk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     gui = MainApplication(root)
+    root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='logo.png'))
     gui.pack(side="top",fill="both",expand=True)
     root.mainloop()

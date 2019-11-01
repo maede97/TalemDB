@@ -7,6 +7,8 @@ class ExportWindow:
     def __init__(self, master, dbHandler):
         self.master = master
 
+        self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.png'))
+
         self.dbHandler = dbHandler
 
         self.master.title("TalemDB | Export")
