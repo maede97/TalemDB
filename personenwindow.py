@@ -1,6 +1,7 @@
 from person import Person
 from database import DataBase
 import tkinter as tk
+import excelwriter
 
 class PersonenWindow:
     def __init__(self, master, dbHandler):
@@ -12,6 +13,8 @@ class PersonenWindow:
         self.frame = tk.Frame(self.master)
 
         tk.Button(self.master,text="Neue Person erfassen",width=25,command=self.neue_person).pack()
+
+        tk.Button(self.master,text="Personen exportieren",width=25,command=self.export_personen).pack()
 
         tk.Label(self.master, text="Personen").pack()
         self.listNodes = tk.Listbox(self.frame, width=29, height=20, font=("Helvetica", 12), selectmode=tk.SINGLE)
@@ -31,6 +34,9 @@ class PersonenWindow:
         self.frame.pack()
 
         self.master.bind("<Escape>",self.destroy)
+    
+    def export_personen(self):
+        excelwriter.write_person_array_to_excel("TalemDB_Personen.xlsx", self.dbHandler.getPersonen(), "Personenverzeichnis")
         
     def destroy(self,e=None):
         self.master.destroy()

@@ -3,11 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
-## Unreleased
+## [Unreleased]
+
+## [v1.2.3]
+### Added
+- Export to Excel
+- Buttons to main frame
 
 ## [v1.2.2]
 ### Changed
-- Hotfix version number in config
+- Hotfix: version number in config
 
 ## [v1.2.1]
 ### Changed
@@ -45,6 +50,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 - database.db
 
 [Unreleased]: https://github.com/maede97/TalemDB/compare/v1.2.2...HEAD
+[v1.2.3]: https://github.com/maede97/TalemDB/releases/tag/v1.2.2...v1.2.3
 [v1.2.2]: https://github.com/maede97/TalemDB/releases/tag/v1.2.1...v1.2.2
 [v1.2.1]: https://github.com/maede97/TalemDB/releases/tag/v1.2...v1.2.1
 [v1.2]: https://github.com/maede97/TalemDB/releases/tag/v1.1...v1.2

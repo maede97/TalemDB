@@ -7,6 +7,7 @@ import tkinter as tk
 from personenwindow import *
 from mitgliederwindow import *
 from kundenwindow import *
+from exportwindow import *
 import updatechecker
 
 class MainApplication(tk.Frame):
@@ -22,9 +23,15 @@ class MainApplication(tk.Frame):
 
         self.dbHandler = DataBase()
 
+        tk.Button(self, text="Personen",command=self.showPersonen).pack()
+        tk.Button(self,text="Mitglieder",command=self.showMitglieder).pack()
+        tk.Button(self,text="Kunden",command=self.showKunden).pack()
+        tk.Button(self,text="Export",command=self.showExport).pack()
+
         self.papp = None
         self.mapp = None
         self.kapp = None
+        self.eapp = None
 
         self.parent.bind("<Escape>",self.close)
     def close(self,e=None):
@@ -78,22 +85,29 @@ class MainApplication(tk.Frame):
             self.label.configure(text="Ein Update wurde gefunden.\nJetzt herunterladen?\nAchtung:\nDies kann eine Weile dauern!")
             tk.Button(self.newWindow, text="Schliessen",command=self.newWindow.destroy).pack()
         self.newWindow.bind("<Escape>",lambda e: self.newWindow.destroy())
+    def showExport(self):
+        self.newWindow = tk.Toplevel(self.parent)
+        if(not self.eapp):
+            self.eapp = ExportWindow(self.newWindow, self.dbHandler)
+        else:
+            self.eapp.destroy()
+            self.eapp = ExportWindow(self.newWindow, self.dbHandler)
     def showPersonen(self):
-        self.newWindow = tk.Toplevel(self.master)
+        self.newWindow = tk.Toplevel(self.parent)
         if(not self.papp):
             self.papp = PersonenWindow(self.newWindow, self.dbHandler)
         else:
             self.papp.destroy()
             self.papp = PersonenWindow(self.newWindow, self.dbHandler)
     def showKunden(self):
-        self.newWindow = tk.Toplevel(self.master)
+        self.newWindow = tk.Toplevel(self.parent)
         if(not self.kapp):
             self.kapp = KundenWindow(self.newWindow, self.dbHandler)
         else:
             self.kapp.destroy()
             self.kapp = KundenWindow(self.newWindow, self.dbHandler)
     def showMitglieder(self):
-        self.newWindow = tk.Toplevel(self.master)
+        self.newWindow = tk.Toplevel(self.parent)
         if(not self.mapp):
             self.mapp = MitgliederWindow(self.newWindow, self.dbHandler)
         else:
