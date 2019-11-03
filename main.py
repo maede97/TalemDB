@@ -4,11 +4,11 @@
 from person import Person
 from database import DataBase
 import tkinter as tk
-from personenwindow import *
-from mitgliederwindow import *
-from kundenwindow import *
-from exportwindow import *
-from bestellungswindow import *
+from personenwindow import PersonenWindow
+from mitgliederwindow import MitgliederWindow
+from kundenwindow import KundenWindow
+from exportwindow import ExportWindow
+from bestellungswindow import BestellungsWindow
 import updatechecker
 
 
