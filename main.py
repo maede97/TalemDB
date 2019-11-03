@@ -11,7 +11,6 @@ from exportwindow import ExportWindow
 from bestellungswindow import BestellungsWindow
 import updatechecker
 
-
 class MainApplication(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
@@ -31,7 +30,7 @@ class MainApplication(tk.Frame):
         tk.Button(self, text="Export", command=self.showExport).pack()
         tk.Button(self, text="Bestellungen",
                   command=self.showBestellungen).pack()
-
+        tk.Button(self, text="Rechnungen (noch nicht verfügbar)").pack()
         self.papp = None
         self.mapp = None
         self.kapp = None
@@ -49,12 +48,16 @@ class MainApplication(tk.Frame):
     def addMenubar(self):
         menubar = tk.Menu(self.parent)
         filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Personen", command=self.showPersonen)
-        filemenu.add_command(label="Kunden", command=self.showKunden)
-        filemenu.add_command(label="Mitglieder", command=self.showMitglieder)
-        filemenu.add_separator()
         filemenu.add_command(label="Beenden", command=self.parent.quit)
-        menubar.add_cascade(label="Datei", menu=filemenu)
+        menubar.add_cascade(label="Datei",menu=filemenu)
+        
+        windowmenu = tk.Menu(menubar, tearoff=0)
+        windowmenu.add_command(label="Personen", command=self.showPersonen)
+        windowmenu.add_command(label="Kunden", command=self.showKunden)
+        windowmenu.add_command(label="Mitglieder", command=self.showMitglieder)
+        windowmenu.add_command(label="Bestellungen",command=self.showBestellungen)
+        windowmenu.add_command(label="Rechnungen (noch nicht verfügbar)")
+        menubar.add_cascade(label="Fenster", menu=windowmenu)
 
         helpmenu = tk.Menu(menubar, tearoff=0)
         helpmenu.add_command(label="Help Index", command=self.donothing)
