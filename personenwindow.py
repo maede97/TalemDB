@@ -1,7 +1,10 @@
 from person import Person
 from database import DataBase
 import tkinter as tk
+import tkinter.messagebox as messagebox
 import excelwriter
+
+# TODO: delete personen
 
 class PersonenWindow:
     def __init__(self, master, dbHandler):
@@ -25,7 +28,6 @@ class PersonenWindow:
         scrollbar.config(command=self.listNodes.yview)
         scrollbar.pack(side="right",fill="y")
 
-        #self.listNodes.bind('<<ListboxSelect>>', self.onSelect)
         self.listNodes.bind('<Double-Button>', self.onSelect)
 
         self.listNodes.config(yscrollcommand=scrollbar.set)
@@ -35,6 +37,15 @@ class PersonenWindow:
         self.frame.pack()
 
         self.master.bind("<Escape>",self.destroy)
+    
+    def ask_delete_person(self, pid):
+        p = self.dbHandler.getPersonByID(pid)
+
+        msg = messagebox.askokcancel("Person löschen","Soll die Person "+p.vorname+" "+p.nachname+" wirklich endgültig gelöscht werden?",icon='warning')
+        if msg == True:
+            self.dbHandler.deletePerson(pid)
+            self.window.destroy()
+            self.loadListBox()
     
     def export_personen(self):
         excelwriter.write_person_array_to_excel("TalemDB_Personen.xlsx", self.dbHandler.getPersonen(), "Personenverzeichnis")
@@ -95,6 +106,7 @@ class PersonenWindow:
         self.curr_id = id
         self.window = tk.Toplevel(self.master)
         self.window.tk.call('wm', 'iconphoto', self.window._w, tk.PhotoImage(file='logo.png'))
+
         heading = tk.Label(self.window, text="Person bearbeiten")
         anrede_lb = tk.Label(self.window, text="Anrede")
         vorname_lb = tk.Label(self.window, text="Vorname")
@@ -152,6 +164,7 @@ class PersonenWindow:
         self.mitglieder_check.grid(row=11,column=1,ipadx="100")
 
         submit = tk.Button(self.window, text="Speichern", command=self.update)
+        tk.Button(self.window,text="Person löschen",command=lambda: self.ask_delete_person(id)).grid(row=13,column=1)
 
         submit.grid(row=12,column=1)
 

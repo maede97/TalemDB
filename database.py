@@ -79,6 +79,13 @@ class DataBase:
             self.cursor.execute(
                 "INSERT INTO bestellungen(personen_id, sorte_dalo, sorte_star, sorte_dachi, sonstiges) VALUES (?, ?, ?, ?, ?)", values)
         self.conn.commit()
+    def deletePerson(self, pid):
+        self.cursor.execute("DELETE FROM kunden WHERE kunden_id=?",[str(pid)])
+        self.cursor.execute("DELETE FROM mitglieder WHERE mitglieder_id=?",[str(pid)])
+        self.cursor.execute("DELETE FROM bestellungen WHERE personen_id=?",[str(pid)])
+        self.cursor.execute("DELETE FROM rechnungen WHERE personen_id=?",[str(pid)])
+        self.cursor.execute("DELETE FROM personen WHERE id=?",[str(pid)])
+        self.conn.commit()
 
     def insertPerson(self, person, kunde=False, mitglied=False):
         values = [person.anrede, person.vorname, person.nachname, person.adresse,

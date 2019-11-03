@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Able to delete person
 - Icon
 - More DB entries (bestellungen, rechnungen)
 - Bestellungs-Seiten
