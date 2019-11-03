@@ -6,21 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 ## [Unreleased]
 ### Added
 - Icon
+- More DB entries (bestellungen, rechnunge)
 
-## [v1.2.3]
+## [v1.2.3] - 2019-11-01
 ### Added
 - Export to Excel
 - Buttons to main frame
 
-## [v1.2.2]
+## [v1.2.2] - 2019-11-01
 ### Changed
 - Hotfix: version number in config
 
-## [v1.2.1]
+## [v1.2.1] - 2019-11-01
 ### Changed
 - Keep data in database
 
-## [v1.2]
+## [v1.2] - 2019-11-01
 ### Added
 - Update Button Frame
 - Update Checker now copyies database to new folder

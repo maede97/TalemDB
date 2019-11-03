@@ -10,11 +10,15 @@ class Person:
         self.email = email
         self.telefon = tel
 
-        self.id = 0
+        self.abonnement = 0
+
+        self.id = False
         self.kunde = False
         self.mitglied = False
     def setID(self, i):
         self.id = i
+    def setAbo(self, a):
+        self.abonnement = a
     def setKunde(self, k):
         self.kunde = k
     def setMitglied(self, m):
