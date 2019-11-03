@@ -100,6 +100,8 @@ class DataBase:
         self.cursor.execute("DELETE FROM kunden")
         self.cursor.execute("DELETE FROM mitglieder")
         self.cursor.execute("DELETE FROM personen")
+        self.cursor.execute("DELETE FROM bestellungen")
+        self.cursor.execute("DELETE FROM rechnungen")
         self.cursor.execute("DELETE FROM aufgaben")
 
     def getPersonen(self):
