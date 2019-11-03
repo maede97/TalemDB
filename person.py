@@ -1,6 +1,7 @@
 class Person:
     """ class to hold a person """
-    def __init__(self, vorname, nachname, adresse, plz, ort, land, email, tel):
+    def __init__(self, anrede, vorname, nachname, adresse, plz, ort, land, email, tel):
+        self.anrede = anrede
         self.vorname = vorname
         self.nachname = nachname
         self.adresse = adresse

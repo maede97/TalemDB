@@ -65,7 +65,7 @@ class PersonenWindow:
         if(not self.__check_for_empty__()):
             return
 
-        p = Person(self.vorname_field.get(), self.nachname_field.get(), self.adresse_field.get(), self.plz_field.get(), self.ort_field.get(), self.land_field.get(), self.email_field.get(), self.telefon_field.get())
+        p = Person(self.anrede_field.get(), self.vorname_field.get(), self.nachname_field.get(), self.adresse_field.get(), self.plz_field.get(), self.ort_field.get(), self.land_field.get(), self.email_field.get(), self.telefon_field.get())
         
         self.dbHandler.insertPerson(p, self.kunden_check_var.get(), self.mitglieder_check_var.get())
         self.window.destroy()
@@ -78,31 +78,13 @@ class PersonenWindow:
         elif(self.nachname_field.get() == ""):
             self.nachname_field.focus_set()
             return False
-        elif(self.adresse_field.get() == ""):
-            self.adresse_field.focus_set()
-            return False
-        elif(self.plz_field.get() == ""):
-            self.plz_field.focus_set()
-            return False
-        elif(self.ort_field.get() == ""):
-            self.ort_field.focus_set()
-            return False
-        elif(self.land_field.get() == ""):
-            self.land_field.focus_set()
-            return False
-        elif(self.email_field.get() == ""):
-            self.email_field.focus_set()
-            return False
-        elif(self.telefon_field.get() == ""):
-            self.telefon_field.focus_set()
-            return False
         else:
             return True
 
     def update(self):
         if(not self.__check_for_empty__()):
             return
-        p = Person(self.vorname_field.get(), self.nachname_field.get(), self.adresse_field.get(), self.plz_field.get(), self.ort_field.get(), self.land_field.get(), self.email_field.get(), self.telefon_field.get())
+        p = Person(self.anrede_field.get(), self.vorname_field.get(), self.nachname_field.get(), self.adresse_field.get(), self.plz_field.get(), self.ort_field.get(), self.land_field.get(), self.email_field.get(), self.telefon_field.get())
         p.setID(self.curr_id)
         self.dbHandler.updatePerson(p, self.kunden_check_var.get(), self.mitglieder_check_var.get())
         self.window.destroy()
@@ -114,6 +96,7 @@ class PersonenWindow:
         self.window = tk.Toplevel(self.master)
         self.window.tk.call('wm', 'iconphoto', self.window._w, tk.PhotoImage(file='logo.png'))
         heading = tk.Label(self.window, text="Person bearbeiten")
+        anrede_lb = tk.Label(self.window, text="Anrede")
         vorname_lb = tk.Label(self.window, text="Vorname")
         nachname_lb = tk.Label(self.window, text="Nachname")
         adresse_lb = tk.Label(self.window, text="Adresse")
@@ -122,17 +105,18 @@ class PersonenWindow:
         land_lb = tk.Label(self.window, text="Land")
         email_lb = tk.Label(self.window, text="Email")
         telefon_lb = tk.Label(self.window, text="Telefon")
-
-        heading.grid(row=0,column=1)
-        vorname_lb.grid(row=1,column=0)
-        nachname_lb.grid(row=2,column=0)
-        adresse_lb.grid(row=3,column=0)
-        plz_lb.grid(row=4,column=0)
-        ort_lb.grid(row=5,column=0)
-        land_lb.grid(row=6,column=0)
-        email_lb.grid(row=7,column=0)
-        telefon_lb.grid(row=8,column=0)
-
+        anrede_lb.grid(row=0,column=1)
+        heading.grid(row=1,column=1)
+        vorname_lb.grid(row=2,column=0)
+        nachname_lb.grid(row=3,column=0)
+        adresse_lb.grid(row=4,column=0)
+        plz_lb.grid(row=5,column=0)
+        ort_lb.grid(row=6,column=0)
+        land_lb.grid(row=7,column=0)
+        email_lb.grid(row=8,column=0)
+        telefon_lb.grid(row=9,column=0)
+        self.anrede_field = tk.Entry(self.window)
+        self.anrede_field.insert(0, p.anrede)
         self.vorname_field = tk.Entry(self.window)
         self.vorname_field.insert(0, p.vorname)
         self.nachname_field = tk.Entry(self.window)
@@ -155,20 +139,21 @@ class PersonenWindow:
         self.kunden_check = tk.Checkbutton(self.window, text="Kunde",variable=self.kunden_check_var)
         self.mitglieder_check = tk.Checkbutton(self.window, text="Mitglied", variable=self.mitglieder_check_var)
 
-        self.vorname_field.grid(row=1,column=1, ipadx="100")
-        self.nachname_field.grid(row=2,column=1,ipadx="100")
-        self.adresse_field.grid(row=3,column=1,ipadx="100")
-        self.plz_field.grid(row=4,column=1,ipadx="100")
-        self.ort_field.grid(row=5,column=1,ipadx="100")
-        self.land_field.grid(row=6,column=1,ipadx="100")
-        self.email_field.grid(row=7,column=1,ipadx="100")
-        self.telefon_field.grid(row=8,column=1,ipadx="100")
-        self.kunden_check.grid(row=9,column=1,ipadx="100")
-        self.mitglieder_check.grid(row=10,column=1,ipadx="100")
+        self.anrede_field.grid(row=1,column=1,ipadx="100")
+        self.vorname_field.grid(row=2,column=1, ipadx="100")
+        self.nachname_field.grid(row=3,column=1,ipadx="100")
+        self.adresse_field.grid(row=4,column=1,ipadx="100")
+        self.plz_field.grid(row=5,column=1,ipadx="100")
+        self.ort_field.grid(row=6,column=1,ipadx="100")
+        self.land_field.grid(row=7,column=1,ipadx="100")
+        self.email_field.grid(row=8,column=1,ipadx="100")
+        self.telefon_field.grid(row=9,column=1,ipadx="100")
+        self.kunden_check.grid(row=10,column=1,ipadx="100")
+        self.mitglieder_check.grid(row=11,column=1,ipadx="100")
 
         submit = tk.Button(self.window, text="Speichern", command=self.update)
 
-        submit.grid(row=11,column=1)
+        submit.grid(row=12,column=1)
 
         self.vorname_field.focus_set() # set focus to first field
         self.window.bind("<Escape>",lambda e: self.window.destroy())
@@ -176,7 +161,8 @@ class PersonenWindow:
     def neue_person(self):
         self.window = tk.Toplevel(self.master)
         self.window.tk.call('wm', 'iconphoto', self.window._w, tk.PhotoImage(file='logo.png'))
-        heading = tk.Label(self.window, text="Neue Person erfassen")
+        heading = tk.Label(self.window, text="Person bearbeiten")
+        anrede_lb = tk.Label(self.window, text="Anrede")
         vorname_lb = tk.Label(self.window, text="Vorname")
         nachname_lb = tk.Label(self.window, text="Nachname")
         adresse_lb = tk.Label(self.window, text="Adresse")
@@ -185,17 +171,18 @@ class PersonenWindow:
         land_lb = tk.Label(self.window, text="Land")
         email_lb = tk.Label(self.window, text="Email")
         telefon_lb = tk.Label(self.window, text="Telefon")
-
         heading.grid(row=0,column=1)
-        vorname_lb.grid(row=1,column=0)
-        nachname_lb.grid(row=2,column=0)
-        adresse_lb.grid(row=3,column=0)
-        plz_lb.grid(row=4,column=0)
-        ort_lb.grid(row=5,column=0)
-        land_lb.grid(row=6,column=0)
-        email_lb.grid(row=7,column=0)
-        telefon_lb.grid(row=8,column=0)
+        anrede_lb.grid(row=1,column=0)
+        vorname_lb.grid(row=2,column=0)
+        nachname_lb.grid(row=3,column=0)
+        adresse_lb.grid(row=4,column=0)
+        plz_lb.grid(row=5,column=0)
+        ort_lb.grid(row=6,column=0)
+        land_lb.grid(row=7,column=0)
+        email_lb.grid(row=8,column=0)
+        telefon_lb.grid(row=9,column=0)
 
+        self.anrede_field = tk.Entry(self.window)
         self.vorname_field = tk.Entry(self.window)
         self.nachname_field = tk.Entry(self.window)
         self.adresse_field = tk.Entry(self.window)
@@ -210,20 +197,21 @@ class PersonenWindow:
         self.kunden_check = tk.Checkbutton(self.window, text="Kunde",variable=self.kunden_check_var)
         self.mitglieder_check = tk.Checkbutton(self.window, text="Mitglied", variable=self.mitglieder_check_var)
 
-        self.vorname_field.grid(row=1,column=1, ipadx="100")
-        self.nachname_field.grid(row=2,column=1,ipadx="100")
-        self.adresse_field.grid(row=3,column=1,ipadx="100")
-        self.plz_field.grid(row=4,column=1,ipadx="100")
-        self.ort_field.grid(row=5,column=1,ipadx="100")
-        self.land_field.grid(row=6,column=1,ipadx="100")
-        self.email_field.grid(row=7,column=1,ipadx="100")
-        self.telefon_field.grid(row=8,column=1,ipadx="100")
-        self.kunden_check.grid(row=9,column=1,ipadx="100")
-        self.mitglieder_check.grid(row=10,column=1,ipadx="100")
+        self.anrede_field.grid(row=1,column=1,ipadx="100")
+        self.vorname_field.grid(row=2,column=1, ipadx="100")
+        self.nachname_field.grid(row=3,column=1,ipadx="100")
+        self.adresse_field.grid(row=4,column=1,ipadx="100")
+        self.plz_field.grid(row=5,column=1,ipadx="100")
+        self.ort_field.grid(row=6,column=1,ipadx="100")
+        self.land_field.grid(row=7,column=1,ipadx="100")
+        self.email_field.grid(row=8,column=1,ipadx="100")
+        self.telefon_field.grid(row=9,column=1,ipadx="100")
+        self.kunden_check.grid(row=10,column=1,ipadx="100")
+        self.mitglieder_check.grid(row=11,column=1,ipadx="100")
 
         submit = tk.Button(self.window, text="Hinzufügen", command=self.insert)
 
-        submit.grid(row=11,column=1)
+        submit.grid(row=12,column=1)
 
         self.vorname_field.focus_set() # set focus to first field
         self.window.bind("<Escape>",lambda e: self.window.destroy())

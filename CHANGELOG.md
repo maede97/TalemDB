@@ -6,7 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 ## [Unreleased]
 ### Added
 - Icon
-- More DB entries (bestellungen, rechnunge)
+- More DB entries (bestellungen, rechnungen)
+- Bestellungs-Seiten
+
+### Changed
+- Some functions inside database class
+
+### Removed
+- some functions inside database class
 
 ## [v1.2.3] - 2019-11-01
 ### Added
@@ -52,7 +59,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 ### Removed
 - database.db
 
-[Unreleased]: https://github.com/maede97/TalemDB/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/maede97/TalemDB/compare/v1.2.3...HEAD
 [v1.2.3]: https://github.com/maede97/TalemDB/releases/tag/v1.2.2...v1.2.3
 [v1.2.2]: https://github.com/maede97/TalemDB/releases/tag/v1.2.1...v1.2.2
 [v1.2.1]: https://github.com/maede97/TalemDB/releases/tag/v1.2...v1.2.1
