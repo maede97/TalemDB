@@ -36,6 +36,10 @@ class DataBase:
         p3.setKunde(True)
         p3.setMitglied(True)
 
+        p4 = Person("a","","","","","","","","")
+        id4 = self.insertPerson(p4,False,False)
+        self.deletePerson(id4)
+
         p1.setAbo(True)
         p2.setAbo(True)
 
