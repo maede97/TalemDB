@@ -1,12 +1,8 @@
 from person import Person
 from database import DataBase
-from updatechecker import *
+from updatechecker import check_versions
 
 # Test class, to use with pytest -q tests.py
-
-def check_version(a,b):
-    return check_versions(a,b)
-
 class Tests:
     def test_person_creation(self):
         p1 = Person("Herr","M","B","Adresse","8000","Zürich","CH","email","Telefon")
