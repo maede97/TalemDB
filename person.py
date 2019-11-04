@@ -11,8 +11,7 @@ class Person:
         self.email = email
         self.telefon = tel
 
-        self.abonnement = 0
-
+        self.abonnement = False
         self.id = False
         self.kunde = False
         self.mitglied = False

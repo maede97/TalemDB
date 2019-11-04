@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 - Icon
 - More DB entries (bestellungen, rechnungen)
 - Bestellungs-Seiten
+- Abo in Personen-{Edit, New}
 
 ### Changed
 - Some functions inside database class

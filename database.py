@@ -91,11 +91,11 @@ class DataBase:
         self.cursor.execute("DELETE FROM personen WHERE id=?",[str(pid)])
         self.conn.commit()
 
-    def insertPerson(self, person, kunde=False, mitglied=False):
+    def insertPerson(self, person, kunde=False, mitglied=False, abo=False):
         values = [person.anrede, person.vorname, person.nachname, person.adresse,
-                  person.plz, person.ort, person.land, person.email, person.telefon]
+                  person.plz, person.ort, person.land, person.email, person.telefon, abo]
         self.cursor.execute(
-            "INSERT INTO personen(anrede,vorname,nachname,adresse,plz,ort,land,email,telefon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", values)
+            "INSERT INTO personen(anrede,vorname,nachname,adresse,plz,ort,land,email,telefon, abonnement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", values)
         pid = str(self.cursor.lastrowid)
         if(kunde or mitglied):
             if kunde:
@@ -117,28 +117,31 @@ class DataBase:
 
     def getPersonen(self):
         personen = []
-        for row in self.cursor.execute("SELECT id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon FROM personen ORDER BY nachname ASC"):
+        for row in self.cursor.execute("SELECT id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen ORDER BY nachname ASC"):
             p = Person(row[1], row[2], row[3], row[4],
                        row[5], row[6], row[7], row[8], row[9])
             p.setID(row[0])
+            p.setAbo(row[10])
             personen.append(p)
         return personen
 
     def getKunden(self):
         personen = []
-        for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon FROM personen,kunden WHERE kunden_id = personen.id ORDER BY personen.nachname ASC"):
+        for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon FROM personen,kunden,abonnement WHERE kunden_id = personen.id ORDER BY personen.nachname ASC"):
             p = Person(row[1], row[2], row[3], row[4],
                        row[5], row[6], row[7], row[8], row[9])
             p.setID(row[0])
+            p.setAbo(row[10])
             personen.append(p)
         return personen
 
     def getMitglieder(self):
         personen = []
-        for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon FROM personen,mitglieder WHERE mitglieder_id = personen.id ORDER BY personen.nachname ASC"):
+        for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen,mitglieder WHERE mitglieder_id = personen.id ORDER BY personen.nachname ASC"):
             p = Person(row[1], row[2], row[3], row[4],
                        row[5], row[6], row[7], row[8], row[9])
             p.setID(row[0])
+            p.setAbo(row[10])
             personen.append(p)
         return personen
 
@@ -152,11 +155,11 @@ class DataBase:
             "SELECT * FROM mitglieder WHERE mitglieder_id=?", [str(id)])
         return not self.cursor.fetchone() == None
 
-    def updatePerson(self, person, kunde, mitglied):
+    def updatePerson(self, person, kunde, mitglied, abo):
         values = [person.anrede, person.vorname, person.nachname, person.adresse,
-                  person.plz, person.ort, person.land, person.email, person.telefon, str(person.id)]
+                  person.plz, person.ort, person.land, person.email, person.telefon, abo, str(person.id)]
         self.cursor.execute(
-            "UPDATE personen SET anrede=?, vorname=?, nachname=?, adresse=?, plz=?, ort=?, land=?, email=?, telefon=? WHERE id=?", values)
+            "UPDATE personen SET anrede=?, vorname=?, nachname=?, adresse=?, plz=?, ort=?, land=?, email=?, telefon=?, abonnement=? WHERE id=?", values)
         if kunde:
             if not self.isKunde(person.id):
                 self.cursor.execute(
@@ -176,10 +179,11 @@ class DataBase:
 
     def getPersonByID(self, id):
         personen = []
-        for row in self.cursor.execute("SELECT id,anrede, vorname,nachname,adresse,plz,ort,land,email,telefon FROM personen WHERE id=?", [str(id)]):
+        for row in self.cursor.execute("SELECT id,anrede, vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen WHERE id=?", [str(id)]):
             p = Person(row[1], row[2], row[3], row[4],
                        row[5], row[6], row[7], row[8], row[9])
             p.setID(row[0])
+            p.setAbo(row[10])
             if(self.isKunde(row[0])):
                 p.setKunde(True)
             if(self.isMitglied(row[0])):

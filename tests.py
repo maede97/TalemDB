@@ -13,6 +13,7 @@ class Tests:
         assert(p1.kunde == True)
     def test_database(self):
         db = DataBase()
+        db.dropAll()
         db.insertTestData() # insert 4, delete 1
         assert(len(db.getPersonen()) == 3)
         assert(len(db.getKunden()) <= len(db.getPersonen()))
