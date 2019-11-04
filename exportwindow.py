@@ -2,6 +2,7 @@ from person import Person
 from database import DataBase
 import tkinter as tk
 import excelwriter
+import config
 
 class ExportWindow:
     def __init__(self, master, dbHandler):
@@ -12,6 +13,7 @@ class ExportWindow:
         self.dbHandler = dbHandler
 
         self.master.title("TalemDB | Export")
+        self.master.geometry(config.WINDOW_SIZE)
         self.frame = tk.Frame(self.master)
 
         tk.Label(self.master, text="Wähle alle Personen aus,\ndie du exportieren möchtest.").pack()

@@ -3,9 +3,7 @@ from database import DataBase
 import tkinter as tk
 import tkinter.messagebox as messagebox
 import excelwriter
-
-# TODO: delete personen
-
+import config
 
 class PersonenWindow:
     def __init__(self, master, dbHandler):
@@ -14,24 +12,27 @@ class PersonenWindow:
         self.dbHandler = dbHandler
 
         self.master.title("TalemDB | Personen")
+        self.master.geometry(config.WINDOW_SIZE)
         self.master.tk.call('wm', 'iconphoto', self.master._w,
                             tk.PhotoImage(file='logo.png'))
         self.frame = tk.Frame(self.master)
 
+        #self.frame.rowconfigure(0, weight=1)
+
         tk.Button(self.master, text="Neue Person erfassen",
-                  width=25, command=self.neue_person).pack()
+                  width=25, command=self.neue_person).grid(row=0,column=0)
 
         tk.Button(self.master, text="Personen exportieren",
-                  width=25, command=self.export_personen).pack()
+                  width=25, command=self.export_personen).grid(row=1,column=0)
 
-        tk.Label(self.master, text="Personen").pack()
-        self.listNodes = tk.Listbox(self.frame, width=29, height=20, font=(
-            "Helvetica", 12), selectmode=tk.SINGLE)
-        self.listNodes.pack(side="left", fill="y")
+        tk.Label(self.master, text="Personen").grid(row=2,column=0)
+        self.listNodes = tk.Listbox(self.frame, font=(
+            "Helvetica", 12), selectmode=tk.SINGLE, height=25,width=50)
+        self.listNodes.grid(row=3,column=0,sticky=(tk.N, tk.S, tk.E, tk.W))
 
         scrollbar = tk.Scrollbar(self.frame, orient="vertical")
         scrollbar.config(command=self.listNodes.yview)
-        scrollbar.pack(side="right", fill="y")
+        scrollbar.grid(row=3,column=1,sticky=(tk.N, tk.S, tk.E, tk.W))
 
         self.listNodes.bind('<Double-Button>', self.onSelect)
 
@@ -39,7 +40,7 @@ class PersonenWindow:
 
         self.loadListBox()
 
-        self.frame.pack()
+        self.frame.grid()
 
         self.master.bind("<Escape>", self.destroy)
 

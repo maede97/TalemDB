@@ -10,6 +10,7 @@ from kundenwindow import KundenWindow
 from exportwindow import ExportWindow
 from bestellungswindow import BestellungsWindow
 import updatechecker
+import config
 
 class MainApplication(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -20,17 +21,17 @@ class MainApplication(tk.Frame):
 
         self.addMenubar()
 
-        self.parent.geometry("500x400")
+        self.parent.geometry(config.WINDOW_SIZE)
 
         self.dbHandler = DataBase()
 
-        tk.Button(self, text="Personen", command=self.showPersonen).pack()
-        tk.Button(self, text="Mitglieder", command=self.showMitglieder).pack()
-        tk.Button(self, text="Kunden", command=self.showKunden).pack()
-        tk.Button(self, text="Export", command=self.showExport).pack()
+        tk.Button(self, text="Personen", command=self.showPersonen,width=25).pack()
+        tk.Button(self, text="Mitglieder", command=self.showMitglieder,width=25).pack()
+        tk.Button(self, text="Kunden", command=self.showKunden,width=25).pack()
+        tk.Button(self, text="Export", command=self.showExport,width=25).pack()
         tk.Button(self, text="Bestellungen",
-                  command=self.showBestellungen).pack()
-        tk.Button(self, text="Rechnungen (noch nicht verfügbar)").pack()
+                  command=self.showBestellungen,width=25).pack()
+        tk.Button(self, text="Rechnungen (noch nicht verfügbar)",width=25).pack()
         self.papp = None
         self.mapp = None
         self.kapp = None

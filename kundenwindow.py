@@ -1,6 +1,7 @@
 from person import Person
 from database import DataBase
 import tkinter as tk
+import config
 
 class KundenWindow:
     def __init__(self, master, dbHandler):
@@ -9,12 +10,14 @@ class KundenWindow:
         self.dbHandler = dbHandler
 
         self.master.title("TalemDB | Kunden")
+        self.master.geometry(config.WINDOW_SIZE)
 
         self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.png'))
         self.frame = tk.Frame(self.master)
 
         tk.Label(self.master, text="Kunden").pack()
-        self.listNodes = tk.Listbox(self.frame, width=29, height=20, font=("Helvetica", 12), selectmode=tk.SINGLE)
+        self.listNodes = tk.Listbox(self.frame, font=(
+            "Helvetica", 12), selectmode=tk.SINGLE, height=25,width=50)
         self.listNodes.pack(side="left",fill="y")
 
         scrollbar = tk.Scrollbar(self.frame, orient="vertical")

@@ -1,5 +1,6 @@
 from person import Person
 import xlsxwriter
+import tkinter.messagebox as msg
 
 def write_person_array_to_excel(file, personen, title):
     workbook = xlsxwriter.Workbook(file)
@@ -41,3 +42,5 @@ def write_person_array_to_excel(file, personen, title):
         row+=1
 
     workbook.close()
+
+    msg.showinfo("TalemDB-Export","Der Export wurde erfolgreich abgeschlossen.")

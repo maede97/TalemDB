@@ -2,7 +2,7 @@ from person import Person
 from database import DataBase
 import tkinter as tk
 import excelwriter
-
+import config
 import scrollable_frame
 
 
@@ -13,10 +13,11 @@ class BestellungsWindow:
         self.dbHandler = dbHandler
 
         self.master.title("TalemDB | Bestellungen")
+        self.master.geometry(config.WINDOW_SIZE)
         self.master.tk.call('wm', 'iconphoto', self.master._w,
                             tk.PhotoImage(file='logo.png'))
         self.frame = scrollable_frame.VerticalScrolledFrame(
-            self.master, height=700)
+            self.master, height=int(config.WINDOW_SIZE.split("x")[1]))
         self.frame.pack()
         self.fillTable()
 
