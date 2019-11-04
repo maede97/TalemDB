@@ -24,6 +24,13 @@ class DataBase:
         self.cursor.execute(
             "CREATE TABLE IF NOT EXISTS aufgaben(id INTEGER PRIMARY KEY, beschreib TEXT DEFAULT '', zeitpunkt DATETIME)")
 
+    def executeSQL(self, sql):
+        """dangerous function, execute user inputed sql"""
+        ret = []
+        for row in self.cursor.execute(sql):
+            ret.append(row[:])
+        return ret
+
     def insertTestData(self):
         p1 = Person("Herr", "Max", "Müller", "Teststrasse 1", "8344",
                     "Bäretswil", "CH", "email@mail.com", "079 886 12 45")

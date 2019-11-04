@@ -11,6 +11,7 @@ from exportwindow import ExportWindow
 from bestellungswindow import BestellungsWindow
 import updatechecker
 import config
+import tkinter.messagebox as msg
 
 class MainApplication(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -38,6 +39,8 @@ class MainApplication(tk.Frame):
         self.eapp = None
         self.bapp = None
 
+        self.popupsql = None
+
         self.parent.bind("<Escape>", self.close)
 
     def close(self, e=None):
@@ -46,9 +49,26 @@ class MainApplication(tk.Frame):
     def donothing(self):
         pass
 
+    def sqlPopup(self):
+        self.popupsql = tk.Toplevel(self)
+        self.sqlentry = tk.Entry(self.popupsql)
+        self.sqlentry.pack()
+        tk.Button(self.popupsql, text="Go", command=self.execSQLPrompt).pack()
+    
+    def execSQLPrompt(self):
+        ret = self.dbHandler.executeSQL(self.sqlentry.get())
+        self.popupsql.destroy()
+        ret_value = ""
+        for row in ret:
+            ret_value += ",".join([str(i) for i in row])
+            ret_value += "\n"
+        msg.showinfo("Result", ret_value)
+
     def addMenubar(self):
         menubar = tk.Menu(self.parent)
         filemenu = tk.Menu(menubar, tearoff=0)
+        filemenu.add_command(label="SQL ausführen", command=self.sqlPopup)
+        filemenu.add_separator()
         filemenu.add_command(label="Beenden", command=self.parent.quit)
         menubar.add_cascade(label="Datei",menu=filemenu)
         
