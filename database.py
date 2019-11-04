@@ -127,7 +127,7 @@ class DataBase:
 
     def getKunden(self):
         personen = []
-        for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon FROM personen,kunden,abonnement WHERE kunden_id = personen.id ORDER BY personen.nachname ASC"):
+        for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen,kunden WHERE kunden_id = personen.id ORDER BY personen.nachname ASC"):
             p = Person(row[1], row[2], row[3], row[4],
                        row[5], row[6], row[7], row[8], row[9])
             p.setID(row[0])

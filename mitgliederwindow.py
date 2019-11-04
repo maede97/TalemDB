@@ -12,7 +12,6 @@ class MitgliederWindow:
         self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.png'))
         self.frame = tk.Frame(self.master)
 
-
         tk.Label(self.master, text="Mitglieder").pack()
         self.listNodes = tk.Listbox(self.frame, width=29, height=20, font=("Helvetica", 12), selectmode=tk.SINGLE)
         self.listNodes.pack(side="left",fill="y")

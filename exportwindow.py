@@ -28,6 +28,8 @@ class ExportWindow:
 
         tk.Button(self.master,text="Alle auswählen",width=25,command=lambda: self.listNodes.selection_set(0, tk.END)).pack()
         tk.Button(self.master,text="Keine auswählen",width=25,command=lambda: self.listNodes.selection_clear(0, tk.END)).pack()
+        tk.Button(self.master,text="Alle Kunden auswählen",width=25,command=self.selectKunden).pack()
+        tk.Button(self.master,text="Alle Mitglieder auswählen",width=25,command=self.selectMitglieder).pack()
 
         self.listNodes.pack(side="left",fill="y")
 
@@ -42,7 +44,22 @@ class ExportWindow:
         self.frame.pack()
 
         self.master.bind("<Escape>",self.destroy)
-    
+    def selectKunden(self):
+        self.listNodes.selection_clear(0, tk.END)
+        kunden = self.dbHandler.getKunden()
+        kunden_ids = [k.id for k in kunden]
+        for i in range(len(self.p_id_list)):
+            if self.p_id_list[i] in kunden_ids:
+                self.listNodes.selection_set(i)
+
+    def selectMitglieder(self):
+        self.listNodes.selection_clear(0, tk.END)
+        mitglieder = self.dbHandler.getMitglieder()
+        mitglieder_ids = [m.id for m in mitglieder]
+        for i in range(len(self.p_id_list)):
+            if self.p_id_list[i] in mitglieder_ids:
+                self.listNodes.selection_set(i)
+
     def export_personen(self):
         if(self.filename.get() == ""):
             return
