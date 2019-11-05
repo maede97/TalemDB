@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 ### Added
 - SQL-Entry-Field
 
-## [v1.2.4]
+## [v1.2.4] - 2019-11-04
 ### Added
 - Able to delete person
 - Icon
