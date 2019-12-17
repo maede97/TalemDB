@@ -2,15 +2,16 @@
 
 block_cipher = None
 
+specpath = os.path.dirname(os.path.abspath(SPEC))
 
 a = Analysis(['main.py'],
-             pathex=['C:\\Users\\Matthias\\Documents\\GitHub\\TalemDB'],
+             pathex=[specpath],
              binaries=[],
-             datas=[],
+             datas=[('logo.ico', '.')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
-             excludes=["C:\\Users\\Matthias\\Documents\\GitHub\\TalemDB\\database.db"],
+             excludes=[os.path.join(specpath,"database.db")],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
              cipher=block_cipher,
@@ -33,4 +34,6 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
-               name='TalemDB')
+               name='TalemDB',
+			   icon=os.path.join(specpath,'logo.ico')
+			  )
