@@ -1,6 +1,7 @@
 from person import Person
 from database import DataBase
 from updatechecker import check_versions
+from logger import Logger
 
 # Test class, to use with pytest -q tests.py
 class Tests:
@@ -12,7 +13,8 @@ class Tests:
         p1.setKunde(True)
         assert(p1.kunde == True)
     def test_database(self):
-        db = DataBase()
+        l = Logger("log.txt")
+        db = DataBase(l)
         db.dropAll()
         db.insertTestData() # insert 4, delete 1
         assert(len(db.getPersonen()) == 3)

@@ -18,6 +18,7 @@ Simply run `pyinstaller mainWindows.spec`
 
 ## Auto Deploy with Actions
 - Commit your changes
-- Create Tag using `git tag -a v...`
+- Create Tag using `git tag -a v...` and add message "v..."
 - Push your changes using `git push`
-- Push tag using `git push v...`
+- Push tag using `git push origin v...`
+- To delete a tag, use `git tag -d tagname` and `git push --delete origin tagname`
