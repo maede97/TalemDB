@@ -20,7 +20,7 @@ jobs:
         pip install pyinstaller
     - name: Build binary
       run: |
-        pyinstaller mainWindows.spec
+        pyinstaller TalemDB.spec
     - name: ZIP binary
       run: |
         Compress-Archive -Path ${{ github.workspace }}\dist\* -CompressionLevel Optimal -DestinationPath ${{ github.workspace }}\Release.zip
