@@ -12,11 +12,15 @@ from bestellungswindow import BestellungsWindow
 import updatechecker
 import config
 import tkinter.messagebox as msg
+from logger import Logger
 
 class MainApplication(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, logger, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
+        self.logger = logger
+
+        self.logger.info("MainApplication started")
 
         self.parent.title("TalemDB")
 
@@ -24,7 +28,7 @@ class MainApplication(tk.Frame):
 
         self.parent.geometry(config.WINDOW_SIZE)
 
-        self.dbHandler = DataBase()
+        self.dbHandler = DataBase(self.logger)
 
         tk.Button(self, text="Personen", command=self.showPersonen,width=25).pack()
         tk.Button(self, text="Mitglieder", command=self.showMitglieder,width=25).pack()
@@ -43,10 +47,15 @@ class MainApplication(tk.Frame):
 
         self.parent.bind("<Escape>", self.close)
 
+        self.logger.info("MainApplication __init__ done")
+
     def close(self, e=None):
+        logger.info("App closed")
+        logger.info("*"*20)
         exit()
 
     def donothing(self):
+        self.logger.info("main donothing")
         pass
 
     def sqlPopup(self):
@@ -54,6 +63,7 @@ class MainApplication(tk.Frame):
         self.sqlentry = tk.Entry(self.popupsql)
         self.sqlentry.pack()
         tk.Button(self.popupsql, text="Go", command=self.execSQLPrompt).pack()
+        self.logger.info("main sqlPopup shown")
     
     def execSQLPrompt(self):
         ret = self.dbHandler.executeSQL(self.sqlentry.get())
@@ -63,6 +73,7 @@ class MainApplication(tk.Frame):
             ret_value += ",".join([str(i) for i in row])
             ret_value += "\n"
         msg.showinfo("Result", ret_value)
+        self.logger.info("main execSQLPrompt done")
 
     def addMenubar(self):
         menubar = tk.Menu(self.parent)
@@ -86,6 +97,7 @@ class MainApplication(tk.Frame):
         helpmenu.add_command(label="Updates suchen", command=self.checkUpdates)
         menubar.add_cascade(label="Hilfe", menu=helpmenu)
         self.parent.config(menu=menubar)
+        self.logger.info("main addMenubar done")
 
     def downloadUpdates(self):
         ret = updatechecker.download_and_export_updates()
@@ -94,6 +106,7 @@ class MainApplication(tk.Frame):
                 text="Erfolgreich heruntergeladen.\nBitte starte das Program aus dem neuen Ordner neu.")
         else:
             self.label.configure(text="Ein Fehler ist aufgetreten.")
+        self.logger.info("main downloadUpdates done")
 
     def checkUpdates(self):
         self.newWindow = tk.Toplevel(self.master)
@@ -124,6 +137,7 @@ class MainApplication(tk.Frame):
             tk.Button(self.newWindow, text="Schliessen",
                       command=self.newWindow.destroy).pack()
         self.newWindow.bind("<Escape>", lambda e: self.newWindow.destroy())
+        self.logger.info("main checkUpdates done")
 
     def showBestellungen(self):
         self.newWindow = tk.Toplevel(self.parent)
@@ -132,6 +146,7 @@ class MainApplication(tk.Frame):
         else:
             self.bapp.destroy()
             self.bapp = BestellungsWindow(self.newWindow, self.dbHandler)
+        self.logger.info("main showBestellungen done")
 
     def showExport(self):
         self.newWindow = tk.Toplevel(self.parent)
@@ -140,6 +155,7 @@ class MainApplication(tk.Frame):
         else:
             self.eapp.destroy()
             self.eapp = ExportWindow(self.newWindow, self.dbHandler)
+        self.logger.info("main showExport done")
 
     def showPersonen(self):
         self.newWindow = tk.Toplevel(self.parent)
@@ -148,6 +164,7 @@ class MainApplication(tk.Frame):
         else:
             self.papp.destroy()
             self.papp = PersonenWindow(self.newWindow, self.dbHandler)
+        self.logger.info("main showPersonen done")
 
     def showKunden(self):
         self.newWindow = tk.Toplevel(self.parent)
@@ -156,6 +173,7 @@ class MainApplication(tk.Frame):
         else:
             self.kapp.destroy()
             self.kapp = KundenWindow(self.newWindow, self.dbHandler)
+        self.logger.info("main showKunden done")
 
     def showMitglieder(self):
         self.newWindow = tk.Toplevel(self.parent)
@@ -164,11 +182,16 @@ class MainApplication(tk.Frame):
         else:
             self.mapp.destroy()
             self.mapp = MitgliederWindow(self.newWindow, self.dbHandler)
+        self.logger.info("main showMitglieder done")
 
 
 if __name__ == "__main__":
+
+    logger = Logger(config.LOGGER_FILE)
+
     root = tk.Tk()
-    gui = MainApplication(root)
+    gui = MainApplication(root, logger)
     root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='logo.png'))
     gui.pack(side="top", fill="both", expand=True)
     root.mainloop()
+    logger.info("Main Done")

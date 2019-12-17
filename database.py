@@ -4,9 +4,11 @@ import config
 
 
 class DataBase:
-    def __init__(self):
+    def __init__(self, logger):
+        self.logger = logger
         self.conn = sqlite3.connect(config.DATABASE)
         self.cursor = self.conn.cursor()
+
 
         self.cursor.execute("CREATE TABLE IF NOT EXISTS personen(\
             id INTEGER PRIMARY KEY, anrede TEXT DEFAULT '', vorname TEXT,nachname TEXT,adresse TEXT DEFAULT '',\
@@ -23,12 +25,15 @@ class DataBase:
             "CREATE TABLE IF NOT EXISTS mitglieder(id INTEGER PRIMARY KEY, mitglieder_id INTEGER, FOREIGN KEY (mitglieder_id) REFERENCES personen (id))")
         self.cursor.execute(
             "CREATE TABLE IF NOT EXISTS aufgaben(id INTEGER PRIMARY KEY, beschreib TEXT DEFAULT '', zeitpunkt DATETIME)")
+        self.logger.info("database __init__ done")
 
     def executeSQL(self, sql):
         """dangerous function, execute user inputed sql"""
         ret = []
         for row in self.cursor.execute(sql):
             ret.append(row[:])
+        self.logger.info("database executeSQL done")
+
         return ret
 
     def insertTestData(self):
@@ -56,6 +61,8 @@ class DataBase:
 
         self.updateBestellungen(id1, 1.5, 2.5, 3.5, "Sonstiges")
         self.insertRechnungsData(id1, "rechnung", 12)
+        self.logger.info("database insertTestData done")
+
 
     def getBestellungenById(self, id):
         """return array of [dalo,star,dachi] in kg each"""
@@ -63,6 +70,8 @@ class DataBase:
         for row in self.cursor.execute("SELECT sorte_dalo,sorte_star,sorte_dachi,sonstiges FROM bestellungen WHERE personen_id=?", [str(id)]):
             kaffees.append([row[0], row[1], row[2], row[3]])
         # should only be one entry per person
+        self.logger.info("database getBestellungenById " + str(id))
+
         return kaffees[0] if len(kaffees) > 0 else [0, 0, 0, ""]
 
     def insertRechnungsData(self, pid, rechnungsart, rechnungsintervall):
@@ -70,9 +79,11 @@ class DataBase:
         self.cursor.execute(
             "INSERT INTO rechnungen(personen_id, rechnungsart, rechnungsintervall) VALUES (?, ?, ?)", values)
         self.conn.commit()
+        self.logger.info("database insertRechnungsData done")
 
     def getRechnungsData(self, pid):
         """get rechnungsart,rechnungsintervall,erstbestellung from personen_id"""
+        self.logger.info("database getRechnungsData")
         for row in self.cursor.execute("SELECT rechnungsart,rechnungsintervall,erstbestellung FROM rechnungen WHERE personen_id=?", [str(pid)]):
             return row
         return None
@@ -90,6 +101,8 @@ class DataBase:
             self.cursor.execute(
                 "INSERT INTO bestellungen(personen_id, sorte_dalo, sorte_star, sorte_dachi, sonstiges) VALUES (?, ?, ?, ?, ?)", values)
         self.conn.commit()
+        self.logger.info("database updateBestellungen done")
+
     def deletePerson(self, pid):
         self.cursor.execute("DELETE FROM kunden WHERE kunden_id=?",[str(pid)])
         self.cursor.execute("DELETE FROM mitglieder WHERE mitglieder_id=?",[str(pid)])
@@ -97,6 +110,7 @@ class DataBase:
         self.cursor.execute("DELETE FROM rechnungen WHERE personen_id=?",[str(pid)])
         self.cursor.execute("DELETE FROM personen WHERE id=?",[str(pid)])
         self.conn.commit()
+        self.logger.info("database deletePerson done")
 
     def insertPerson(self, person, kunde=False, mitglied=False, abo=False):
         values = [person.anrede, person.vorname, person.nachname, person.adresse,
@@ -112,6 +126,7 @@ class DataBase:
                 self.cursor.execute(
                     "INSERT INTO mitglieder(mitglieder_id) VALUES(?)", [pid])
         self.conn.commit()
+        self.logger.info("database insertPerson done")
         return pid
 
     def dropAll(self):
@@ -121,6 +136,7 @@ class DataBase:
         self.cursor.execute("DELETE FROM bestellungen")
         self.cursor.execute("DELETE FROM rechnungen")
         self.cursor.execute("DELETE FROM aufgaben")
+        self.logger.info("database dropAll done")
 
     def getPersonen(self):
         personen = []
@@ -130,6 +146,7 @@ class DataBase:
             p.setID(row[0])
             p.setAbo(row[10])
             personen.append(p)
+        self.logger.info("database getPersonen done")
         return personen
 
     def getKunden(self):
@@ -140,6 +157,7 @@ class DataBase:
             p.setID(row[0])
             p.setAbo(row[10])
             personen.append(p)
+        self.logger.info("database getKunden done")
         return personen
 
     def getMitglieder(self):
@@ -150,16 +168,19 @@ class DataBase:
             p.setID(row[0])
             p.setAbo(row[10])
             personen.append(p)
+        self.logger.info("database getMitglieder done")
         return personen
 
     def isKunde(self, id):
         self.cursor.execute(
             "SELECT * FROM kunden WHERE kunden_id=?", [str(id)])
+        self.logger.info("database isKunde " + str(id))
         return not self.cursor.fetchone() == None
 
     def isMitglied(self, id):
         self.cursor.execute(
             "SELECT * FROM mitglieder WHERE mitglieder_id=?", [str(id)])
+        self.logger.info("database isMitglied " + str(id))
         return not self.cursor.fetchone() == None
 
     def updatePerson(self, person, kunde, mitglied, abo):
@@ -183,6 +204,7 @@ class DataBase:
             self.cursor.execute(
                 "DELETE FROM mitglieder WHERE mitglieder_id=?", [str(person.id)])
         self.conn.commit()
+        self.logger.info("database isMitglied done")
 
     def getPersonByID(self, id):
         personen = []
@@ -196,5 +218,9 @@ class DataBase:
             if(self.isMitglied(row[0])):
                 p.setMitglied(True)
             personen.append(p)
-        assert(len(personen) == 1)
+        if(len(personen) == 1):
+            self.logger.info("database getPersonByID " + str(id))
+        else:
+            self.logger.error("database getPersonByID " + str(id))
+            exit(1)
         return personen[0]
