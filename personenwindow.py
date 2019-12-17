@@ -14,7 +14,7 @@ class PersonenWindow:
         self.master.title("TalemDB | Personen")
         self.master.geometry(config.WINDOW_SIZE)
         self.master.tk.call('wm', 'iconphoto', self.master._w,
-                            tk.PhotoImage(file='logo.ico'))
+                            tk.PhotoImage(file='logo.png'))
         self.frame = tk.Frame(self.master)
 
         #self.frame.rowconfigure(0, weight=1)
@@ -118,7 +118,7 @@ class PersonenWindow:
         self.curr_id = id
         self.window = tk.Toplevel(self.master)
         self.window.tk.call('wm', 'iconphoto', self.window._w,
-                            tk.PhotoImage(file='logo.ico'))
+                            tk.PhotoImage(file='logo.png'))
 
         heading = tk.Label(self.window, text="Person bearbeiten")
         anrede_lb = tk.Label(self.window, text="Anrede")
@@ -194,7 +194,7 @@ class PersonenWindow:
     def neue_person(self):
         self.window = tk.Toplevel(self.master)
         self.window.tk.call('wm', 'iconphoto', self.window._w,
-                            tk.PhotoImage(file='logo.ico'))
+                            tk.PhotoImage(file='logo.png'))
         heading = tk.Label(self.window, text="Person bearbeiten")
         anrede_lb = tk.Label(self.window, text="Anrede")
         vorname_lb = tk.Label(self.window, text="Vorname")

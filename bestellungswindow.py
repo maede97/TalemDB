@@ -15,7 +15,7 @@ class BestellungsWindow:
         self.master.title("TalemDB | Bestellungen")
         self.master.geometry(config.WINDOW_SIZE)
         self.master.tk.call('wm', 'iconphoto', self.master._w,
-                            tk.PhotoImage(file='logo.ico'))
+                            tk.PhotoImage(file='logo.png'))
         self.frame = scrollable_frame.VerticalScrolledFrame(
             self.master, height=int(config.WINDOW_SIZE.split("x")[1]))
         self.frame.pack()
@@ -70,7 +70,7 @@ class BestellungsWindow:
         self.curr_id = id
         self.window = tk.Toplevel(self.master)
         self.window.tk.call('wm', 'iconphoto', self.window._w,
-                            tk.PhotoImage(file='logo.ico'))
+                            tk.PhotoImage(file='logo.png'))
         heading = tk.Label(self.window, text="Bestellungen bearbeiten")
         vorname_lb = tk.Label(self.window, text="Vorname")
         nachname_lb = tk.Label(self.window, text="Nachname")

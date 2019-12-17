@@ -12,7 +12,7 @@ class KundenWindow:
         self.master.title("TalemDB | Kunden")
         self.master.geometry(config.WINDOW_SIZE)
 
-        self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.ico'))
+        self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.png'))
         self.frame = tk.Frame(self.master)
 
         tk.Label(self.master, text="Kunden").pack()

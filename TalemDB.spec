@@ -7,7 +7,7 @@ specpath = os.path.dirname(os.path.abspath(SPEC))
 a = Analysis(['main.py'],
              pathex=[specpath],
              binaries=[],
-             datas=[('logo.ico', '.')],
+             datas=[('logo.png', '.')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -35,5 +35,5 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                name='TalemDB',
-			   icon=os.path.join(specpath,'logo.ico')
+			   icon=os.path.join(specpath,'logo.png')
 			  )
