@@ -84,8 +84,8 @@ class PersonenWindow:
         if(not self.__check_for_empty__()):
             return
 
-        p = Person(self.anrede_field.get(), self.vorname_field.get(), self.nachname_field.get(), self.adresse_field.get(
-        ), self.plz_field.get(), self.ort_field.get(), self.land_field.get(), self.email_field.get(), self.telefon_field.get())
+        p = Person(self.anrede_field.get(), self.vorname_field.get(), self.nachname_field.get(), self.adresse_field.get(),
+            self.plz_field.get(), self.ort_field.get(), self.land_field.get(), self.email_field.get(), self.telefon_field.get())
 
         self.dbHandler.insertPerson(
             p, self.kunden_check_var.get(), self.mitglieder_check_var.get(), self.abo_check_var.get())
@@ -94,10 +94,12 @@ class PersonenWindow:
 
     def __check_for_empty__(self):
         if (self.vorname_field.get() == ""):
+            self.logger.warning("personenwindow check_for_empty vorname not set")
             self.vorname_field.focus_set()
             return False
         elif(self.nachname_field.get() == ""):
             self.nachname_field.focus_set()
+            self.logger.warning("personenwindow check_for_empty nachname not set")
             return False
         else:
             return True

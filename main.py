@@ -184,7 +184,6 @@ class MainApplication(tk.Frame):
             self.mapp = MitgliederWindow(self.newWindow, self.dbHandler)
         self.logger.info("main showMitglieder done")
 
-
 if __name__ == "__main__":
 
     logger = Logger(config.LOGGER_FILE)
