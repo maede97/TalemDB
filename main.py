@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
     root = tk.Tk()
     gui = MainApplication(root, logger)
-    root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='logo.png'))
+    root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='logo.ico'))
     gui.pack(side="top", fill="both", expand=True)
     root.mainloop()
     logger.info("Main Done")

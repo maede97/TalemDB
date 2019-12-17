@@ -11,7 +11,7 @@ class MitgliederWindow:
 
         self.master.title("TalemDB | Mitglieder")
         self.master.geometry(config.WINDOW_SIZE)
-        self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.png'))
+        self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.ico'))
         self.frame = tk.Frame(self.master)
 
         tk.Label(self.master, text="Mitglieder").pack()
