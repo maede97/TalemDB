@@ -3,40 +3,81 @@
 
 from person import Person
 from database import DataBase
-import tkinter as tk
+import sys
+
+# different windows
 from personenwindow import PersonenWindow
 from mitgliederwindow import MitgliederWindow
 from kundenwindow import KundenWindow
 from exportwindow import ExportWindow
 from bestellungswindow import BestellungsWindow
+
+# varia
 import updatechecker
 import config
-import tkinter.messagebox as msg
+
+# GUI stuff
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import pyqtSlot
+
 from logger import Logger
 
-class MainApplication(tk.Frame):
-    def __init__(self, parent, logger, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
-        self.parent = parent
+class MainApplication(QMainWindow):
+    def __init__(self, logger):
+        super().__init__()
         self.logger = logger
+
+        self.frame = QWidget(self) # set frame to hold all content
 
         self.logger.info("MainApplication started")
 
-        self.parent.title("TalemDB")
+        self.setWindowTitle("TalemDB")
+        self.setGeometry(100,100,320,300)
+        self.frame.setGeometry(0,20,320,200)
+
+        # set up a layout
+        self.horizontalGroupBox = QGroupBox()
+        layout = QGridLayout()
+        
+        # Add Main buttons
+        button = QPushButton("Personen", self)
+        button.setToolTip("Zeige Personen")
+        button.clicked.connect(self.showPersonen)
+        layout.addWidget(button,0,0)
+
+        button = QPushButton("Mitglieder", self)
+        button.setToolTip("Zeige Mitglieder")
+        button.clicked.connect(self.showMitglieder)
+        layout.addWidget(button,1,0)
+
+        button = QPushButton("Kunden", self)
+        button.setToolTip("Zeige Kunden")
+        button.clicked.connect(self.showKunden)
+        layout.addWidget(button,2,0)
+
+        button = QPushButton("Export", self)
+        button.setToolTip("Exportieren")
+        button.clicked.connect(self.showExport)
+        layout.addWidget(button,3,0)
+
+        button = QPushButton("Bestellungen", self)
+        button.setToolTip("Zeige Bestellungen")
+        button.clicked.connect(self.showBestellungen)
+        layout.addWidget(button,4,0)
+
+        self.statusBar().showMessage('Program geladen.')
+        
+        self.horizontalGroupBox.setLayout(layout)
+
+        windowLayout = QVBoxLayout()
+        windowLayout.addWidget(self.horizontalGroupBox)
+        self.frame.setLayout(windowLayout)
 
         self.addMenubar()
 
-        self.parent.geometry(config.WINDOW_SIZE)
-
         self.dbHandler = DataBase(self.logger)
 
-        tk.Button(self, text="Personen", command=self.showPersonen,width=25).pack()
-        tk.Button(self, text="Mitglieder", command=self.showMitglieder,width=25).pack()
-        tk.Button(self, text="Kunden", command=self.showKunden,width=25).pack()
-        tk.Button(self, text="Export", command=self.showExport,width=25).pack()
-        tk.Button(self, text="Bestellungen",
-                  command=self.showBestellungen,width=25).pack()
-        tk.Button(self, text="Rechnungen (noch nicht verfügbar)",width=25).pack()
         self.papp = None
         self.mapp = None
         self.kapp = None
@@ -45,58 +86,112 @@ class MainApplication(tk.Frame):
 
         self.popupsql = None
 
-        self.parent.bind("<Escape>", self.close)
-
         self.logger.info("MainApplication __init__ done")
 
-    def close(self, e=None):
-        logger.info("App closed")
-        logger.info("*"*20)
-        exit()
+        # Show the GUI
+        self.show()
 
     def donothing(self):
         self.logger.info("main donothing")
         pass
 
     def sqlPopup(self):
-        self.popupsql = tk.Toplevel(self)
-        self.sqlentry = tk.Entry(self.popupsql)
-        self.sqlentry.pack()
-        tk.Button(self.popupsql, text="Go", command=self.execSQLPrompt).pack()
+        self.popupsql = QWidget()
+        self.popupsql.setWindowTitle("SQL ausführen")
+        self.sql_horizontalGroupBox = QGroupBox()
+        self.sql_layout = QGridLayout()
+        self.sqlentry = QTextEdit(self.popupsql)
+        self.sql_layout.addWidget(self.sqlentry,1,0)
+
+        button = QPushButton("Ausführen",self.popupsql)
+        button.clicked.connect(self.execSQLPrompt)
+        self.sql_layout.addWidget(button, 2, 0)
+
+        self.sql_horizontalGroupBox.setLayout(self.sql_layout)
+
+        windowLayout = QVBoxLayout()
+        windowLayout.addWidget(self.sql_horizontalGroupBox)
+        self.popupsql.setLayout(windowLayout)
+
+        self.popupsql.show()
         self.logger.info("main sqlPopup shown")
     
     def execSQLPrompt(self):
-        ret = self.dbHandler.executeSQL(self.sqlentry.get())
-        self.popupsql.destroy()
-        ret_value = ""
+        ret = self.dbHandler.executeSQL(self.sqlentry.toPlainText())
+        tableview = QTableView(self.popupsql)
+        self.sql_layout.addWidget(tableview, 3, 0)
+        model = QStandardItemModel(self.popupsql)
+        tableview.setModel(model)
+        tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
         for row in ret:
-            ret_value += ",".join([str(i) for i in row])
-            ret_value += "\n"
-        msg.showinfo("Result", ret_value)
+            model.appendRow([QStandardItem(str(i)) for i in row])
         self.logger.info("main execSQLPrompt done")
 
-    def addMenubar(self):
-        menubar = tk.Menu(self.parent)
-        filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(label="SQL ausführen", command=self.sqlPopup)
-        filemenu.add_separator()
-        filemenu.add_command(label="Beenden", command=self.parent.quit)
-        menubar.add_cascade(label="Datei",menu=filemenu)
-        
-        windowmenu = tk.Menu(menubar, tearoff=0)
-        windowmenu.add_command(label="Personen", command=self.showPersonen)
-        windowmenu.add_command(label="Kunden", command=self.showKunden)
-        windowmenu.add_command(label="Mitglieder", command=self.showMitglieder)
-        windowmenu.add_command(label="Bestellungen",command=self.showBestellungen)
-        windowmenu.add_command(label="Rechnungen (noch nicht verfügbar)")
-        menubar.add_cascade(label="Fenster", menu=windowmenu)
+        # example for clicker
+    #     self.table.doubleClicked.connect(self.on_click)
+ 
+    # def on_click(self, signal):
+    #     row = signal.row()  # RETRIEVES ROW OF CELL THAT WAS DOUBLE CLICKED
+    #     column = signal.column()  # RETRIEVES COLUMN OF CELL THAT WAS DOUBLE CLICKED
+    #     cell_dict = self.model.itemData(signal)  # RETURNS DICT VALUE OF SIGNAL
+    #     cell_value = cell_dict.get(0)  # RETRIEVE VALUE FROM DICT
+ 
+    #     index = signal.sibling(row, 0)
+    #     index_dict = self.model.itemData(index)
+    #     index_value = index_dict.get(0)
+    #     print(
+    #         'Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.format(row, column, cell_value, index_value))
 
-        helpmenu = tk.Menu(menubar, tearoff=0)
-        helpmenu.add_command(label="Help Index", command=self.donothing)
-        helpmenu.add_command(label="Über...", command=self.donothing)
-        helpmenu.add_command(label="Updates suchen", command=self.checkUpdates)
-        menubar.add_cascade(label="Hilfe", menu=helpmenu)
-        self.parent.config(menu=menubar)
+    def addMenubar(self):
+        menubar = self.menuBar()
+        filemenu = menubar.addMenu('&Datei')
+        runSQL = QAction(QIcon('logo.png'), 'SQL ausführen', self)
+        runSQL.setStatusTip('SQL ausführen') # wird automatisch in status bar angezeigt!
+        runSQL.triggered.connect(self.sqlPopup)
+        filemenu.addAction(runSQL)
+
+        exitAct = QAction(QIcon('.'), 'Beenden', self)        
+        #exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Applikation beenden')
+        exitAct.triggered.connect(qApp.quit)
+        filemenu.addAction(exitAct) 
+        
+        windowmenu = menubar.addMenu('&Fenster')
+
+        temp = QAction('Personen',self)
+        temp.triggered.connect(self.showPersonen)
+        windowmenu.addAction(temp)
+
+        temp = QAction('Kunden',self)
+        temp.triggered.connect(self.showKunden)
+        windowmenu.addAction(temp)
+
+        temp = QAction('Mitglieder',self)
+        temp.triggered.connect(self.showMitglieder)
+        windowmenu.addAction(temp)
+
+        temp = QAction('Bestellungen',self)
+        temp.triggered.connect(self.showBestellungen)
+        windowmenu.addAction(temp)
+
+        temp = QAction('Rechnungen',self)
+        temp.setStatusTip("Noch nicht verfügbar")
+        windowmenu.addAction(temp)
+
+        helpmenu = menubar.addMenu('Hilfe')
+
+        temp = QAction('Hilfe',self)
+        temp.triggered.connect(self.donothing)
+        helpmenu.addAction(temp)
+
+        temp = QAction('Über',self)
+        temp.triggered.connect(self.donothing)
+        helpmenu.addAction(temp)
+
+        temp = QAction('Updates suchen',self)
+        temp.triggered.connect(self.checkUpdates)
+        helpmenu.addAction(temp)
+
         self.logger.info("main addMenubar done")
 
     def downloadUpdates(self):
@@ -139,6 +234,7 @@ class MainApplication(tk.Frame):
         self.newWindow.bind("<Escape>", lambda e: self.newWindow.destroy())
         self.logger.info("main checkUpdates done")
 
+    @pyqtSlot()
     def showBestellungen(self):
         self.newWindow = tk.Toplevel(self.parent)
         if(not self.bapp):
@@ -147,7 +243,7 @@ class MainApplication(tk.Frame):
             self.bapp.destroy()
             self.bapp = BestellungsWindow(self.newWindow, self.dbHandler)
         self.logger.info("main showBestellungen done")
-
+    @pyqtSlot()
     def showExport(self):
         self.newWindow = tk.Toplevel(self.parent)
         if(not self.eapp):
@@ -157,6 +253,7 @@ class MainApplication(tk.Frame):
             self.eapp = ExportWindow(self.newWindow, self.dbHandler)
         self.logger.info("main showExport done")
 
+    @pyqtSlot()
     def showPersonen(self):
         self.newWindow = tk.Toplevel(self.parent)
         if(not self.papp):
@@ -166,6 +263,7 @@ class MainApplication(tk.Frame):
             self.papp = PersonenWindow(self.newWindow, self.dbHandler)
         self.logger.info("main showPersonen done")
 
+    @pyqtSlot()
     def showKunden(self):
         self.newWindow = tk.Toplevel(self.parent)
         if(not self.kapp):
@@ -174,7 +272,7 @@ class MainApplication(tk.Frame):
             self.kapp.destroy()
             self.kapp = KundenWindow(self.newWindow, self.dbHandler)
         self.logger.info("main showKunden done")
-
+    @pyqtSlot()
     def showMitglieder(self):
         self.newWindow = tk.Toplevel(self.parent)
         if(not self.mapp):
@@ -188,10 +286,8 @@ if __name__ == "__main__":
 
     logger = Logger(config.LOGGER_FILE)
 
-    root = tk.Tk()
-    gui = MainApplication(root, logger)
-    root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='logo.png'))
-    gui.pack(side="top", fill="both", expand=True)
-    root.mainloop()
+    app = QApplication(sys.argv)
+    ex = MainApplication(logger)
+    sys.exit(app.exec_())
     logger.info("*"*20)
     logger.info("Main Done")
