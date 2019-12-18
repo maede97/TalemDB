@@ -1,86 +1,99 @@
 from person import Person
 from database import DataBase
-import tkinter as tk
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 import excelwriter
 import config
-
+#
+# selectionBehavior to QAbstractItemView::SelectRows
 class ExportWindow:
     def __init__(self, master, dbHandler):
         self.master = master
-
-        self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.png'))
-
+        self.frame = QWidget()
+        self.frame.show()
+        # TODO: Icon
         self.dbHandler = dbHandler
 
-        self.master.title("TalemDB | Export")
-        self.master.geometry(config.WINDOW_SIZE)
-        self.frame = tk.Frame(self.master)
+        self.frame.setWindowTitle("TalemDB | Export")
 
-        tk.Label(self.master, text="Wähle alle Personen aus,\ndie du exportieren möchtest.").pack()
+        horizontalGroupBox = QGroupBox()
+        layout = QGridLayout()
 
-        tk.Label(self.master,text="Dateiname nach dem Export (ohne .xlsx)").pack()
-        self.filename = tk.Entry(self.master)
-        self.filename.pack()
-        self.filename.insert(0, "TalemDB_Export")
-        tk.Button(self.master,text="Personen exportieren",width=25,command=self.export_personen).pack()
+        layout.addWidget(QLabel("Export", self.frame), 1, 0)
+        layout.addWidget(QLabel("Wähle alle Personen aus, die du exportieren möchtest.", self.frame), 2, 0)
 
-        tk.Label(self.master, text="Personen").pack()
 
-        self.listNodes = tk.Listbox(self.frame, width=29, height=20, font=("Helvetica", 12), selectmode=tk.MULTIPLE)
-
-        tk.Button(self.master,text="Alle auswählen",width=25,command=lambda: self.listNodes.selection_set(0, tk.END)).pack()
-        tk.Button(self.master,text="Keine auswählen",width=25,command=lambda: self.listNodes.selection_clear(0, tk.END)).pack()
-        tk.Button(self.master,text="Alle Kunden auswählen",width=25,command=self.selectKunden).pack()
-        tk.Button(self.master,text="Alle Mitglieder auswählen",width=25,command=self.selectMitglieder).pack()
-
-        self.listNodes.pack(side="left",fill="y")
-
-        scrollbar = tk.Scrollbar(self.frame, orient="vertical")
-        scrollbar.config(command=self.listNodes.yview)
-        scrollbar.pack(side="right",fill="y")
-
-        self.listNodes.config(yscrollcommand=scrollbar.set)
-
-        self.loadListBox()
+        self.tableView = QTableView(self.frame)
+        self.model = QStandardItemModel(self.frame)
+        self.tableView.setModel(self.model)
+        self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tableView.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.model.setHorizontalHeaderLabels(['Vorname', 'Nachname', 'Adresse', 'PLZ', 'Ort'])
         
-        self.frame.pack()
+        horizontalGroupBox.setLayout(layout)
+        windowLayout = QVBoxLayout()
+        windowLayout.addWidget(horizontalGroupBox)
+        self.frame.setLayout(windowLayout)
 
-        self.master.bind("<Escape>",self.destroy)
+        layout.addWidget(QLabel("Dateiname nach dem Export (ohne .xlsx)", self.frame), 3, 0)
+        self.filename = QLineEdit("Personen_Export", self.frame)
+        layout.addWidget(self.filename, 4, 0)
+
+        button = QPushButton("Personen Exportieren")
+        button.clicked.connect(self.export_personen)
+        layout.addWidget(button, 5, 0)
+
+        button = QPushButton("Alle auswählen")
+        button.clicked.connect(self.tableView.selectAll)
+        layout.addWidget(button, 6, 0)
+
+        button = QPushButton("Keine auswählen")
+        button.clicked.connect(self.tableView.clearSelection)
+        layout.addWidget(button, 7, 0)
+
+        button = QPushButton("Kunden auswählen")
+        button.clicked.connect(self.selectKunden)
+        layout.addWidget(button, 8, 0)
+
+        button = QPushButton("Mitglieder auswählen")
+        button.clicked.connect(self.selectMitglieder)
+        layout.addWidget(button, 9, 0)
+
+        layout.addWidget(self.tableView, 10, 0)
+
+        self.loadListBox(self.model)
+        
+        # TODO: bind esc
+
     def selectKunden(self):
-        self.listNodes.selection_clear(0, tk.END)
+        self.tableView.clearSelection()
         kunden = self.dbHandler.getKunden()
         kunden_ids = [k.id for k in kunden]
         for i in range(len(self.p_id_list)):
             if self.p_id_list[i] in kunden_ids:
-                self.listNodes.selection_set(i)
+                self.tableView.selectRow(i)
 
     def selectMitglieder(self):
-        self.listNodes.selection_clear(0, tk.END)
+        self.tableView.clearSelection()
         mitglieder = self.dbHandler.getMitglieder()
         mitglieder_ids = [m.id for m in mitglieder]
         for i in range(len(self.p_id_list)):
             if self.p_id_list[i] in mitglieder_ids:
-                self.listNodes.selection_set(i)
+                self.tableView.selectRow(i)
 
     def export_personen(self):
-        if(self.filename.get() == ""):
+        if(self.filename.text() == ""):
             return
-        ids = [self.p_id_list[idx] for idx in self.listNodes.curselection()]
+        ids = list(set([self.p_id_list[i.row()] for i in self.tableView.selectedIndexes()]))
         personen = []
         for id in ids:
             personen.append(self.dbHandler.getPersonByID(id))
-        excelwriter.write_person_array_to_excel(self.filename.get() + ".xlsx", personen, "Personenverzeichnis")
+        if excelwriter.write_person_array_to_excel(self.filename.text() + ".xlsx", personen, "Personenverzeichnis"):
+            self.master.logger.info("Export done " + self.filename.text())
         
-    def destroy(self,e=None):
-
-        
-        self.master.destroy()
-
-    def loadListBox(self):
-        self.listNodes.delete(0, tk.END)
+    def loadListBox(self, model):
         self.p_id_list = []
         for p in self.dbHandler.getPersonen():
-            self.listNodes.insert(tk.END, p.vorname + " " +p.nachname)
+            model.appendRow([QStandardItem(str(i)) for i in [p.vorname, p.nachname, p.adresse, p.plz, p.ort]])
             self.p_id_list.append(p.id)
-    def close_windows(self):
-        self.master.destroy()

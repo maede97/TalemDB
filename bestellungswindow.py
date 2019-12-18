@@ -1,115 +1,56 @@
 from person import Person
 from database import DataBase
-import tkinter as tk
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import excelwriter
 import config
-import scrollable_frame
-
 
 class BestellungsWindow:
     def __init__(self, master, dbHandler):
         self.master = master
-
+        self.frame = QWidget()
+        self.frame.show()
         self.dbHandler = dbHandler
 
-        self.master.title("TalemDB | Bestellungen")
-        self.master.geometry(config.WINDOW_SIZE)
-        self.master.tk.call('wm', 'iconphoto', self.master._w,
-                            tk.PhotoImage(file='logo.png'))
-        self.frame = scrollable_frame.VerticalScrolledFrame(
-            self.master, height=int(config.WINDOW_SIZE.split("x")[1]))
-        self.frame.pack()
-        self.fillTable()
+        self.frame.setWindowTitle("TalemDB | Bestellungen")
+        
+        # TODO Icon
 
-        self.master.bind("<Escape>", self.destroy)
+        horizontalGroupBox = QGroupBox()
+        layout = QGridLayout()
 
-    def destroy(self, e=None):
-        self.master.destroy()
+        layout.addWidget(QLabel("Bestellungen", self.frame), 1, 0)
 
-    def close_windows(self):
-        self.master.destroy()
+        tableview = QTableView(self.frame)
+        layout.addWidget(tableview, 2, 0)
+        self.model = QStandardItemModel(self.frame)
+        tableview.setModel(self.model)
+        self.model.setHorizontalHeaderLabels(['Vorname', 'Nachname', 'Dalo', 'Star', 'Dachi', 'Sonstiges'])
+        self.fillTable(self.model)
+        for row in range(0, self.model.rowCount()):
+            self.model.item(row,0).setFlags(Qt.ItemIsEnabled)
+            self.model.item(row,1).setFlags(Qt.ItemIsEnabled)
+        self.model.itemChanged.connect(self.update)
 
-    def fillTable(self):
+        horizontalGroupBox.setLayout(layout)
+        windowLayout = QVBoxLayout()
+        windowLayout.addWidget(horizontalGroupBox)
+        self.frame.setLayout(windowLayout)
+
+        # TODO bind escape
+
+    def fillTable(self, model):
+        self.p_id_list = []
         pers = self.dbHandler.getPersonen()
         # create header
-        tk.Label(self.frame.interior, text="Vorname").grid(row=0, column=0)
-        tk.Label(self.frame.interior, text="Nachname").grid(row=0, column=1)
-        tk.Label(self.frame.interior, text="Dalo").grid(row=0, column=2)
-        tk.Label(self.frame.interior, text="Star").grid(row=0, column=3)
-        tk.Label(self.frame.interior, text="Dachi").grid(row=0, column=4)
-        tk.Label(self.frame.interior, text="Sonstiges").grid(row=0, column=5)
-
         for i, p in enumerate(pers):
             best = self.dbHandler.getBestellungenById(p.id)
-            tk.Button(self.frame.interior, text=p.vorname, width=15,
-                      command=lambda curr=p.id: self.showEditScreen(curr)).grid(row=i+1, column=0)
-            tk.Label(self.frame.interior, text=p.nachname).grid(
-                row=i+1, column=1)
-            tk.Label(self.frame.interior, text=best[0]).grid(row=i+1, column=2)
-            tk.Label(self.frame.interior, text=best[1]).grid(row=i+1, column=3)
-            tk.Label(self.frame.interior, text=best[2]).grid(row=i+1, column=4)
-            tk.Label(self.frame.interior, text=best[3]).grid(
-                row=i+1, column=5)  # sonstiges
+            self.p_id_list.append(p.id)
+            model.appendRow([QStandardItem(str(j)) for j in [p.vorname, p.nachname, best[0], best[1], best[2], best[3]]])
 
-    def update(self):
-        # check for empty
-        self.dbHandler.updateBestellungen(
-            self.curr_id, self.dalo_field.get(), self.star_field.get(), self.dachi_field.get(), self.sonstiges_field.get())
-        self.window.destroy()
-        self.frame.destroy()
-        self.frame = scrollable_frame.VerticalScrolledFrame(
-            self.master, height=700)
-        self.frame.pack()
-        self.fillTable()
-
-    def showEditScreen(self, id):
-        p = self.dbHandler.getPersonByID(id)
-        best = self.dbHandler.getBestellungenById(id)
-        # fill toplevel
-
-        self.curr_id = id
-        self.window = tk.Toplevel(self.master)
-        self.window.tk.call('wm', 'iconphoto', self.window._w,
-                            tk.PhotoImage(file='logo.png'))
-        heading = tk.Label(self.window, text="Bestellungen bearbeiten")
-        vorname_lb = tk.Label(self.window, text="Vorname")
-        nachname_lb = tk.Label(self.window, text="Nachname")
-        dalo_lb = tk.Label(self.window, text="Dalo")
-        star_lb = tk.Label(self.window, text="Star")
-        dachi_lb = tk.Label(self.window, text="Dachi")
-        sonstiges_lb = tk.Label(self.window, text="Sonstiges")
-
-        heading.grid(row=0, column=1)
-        vorname_lb.grid(row=1, column=0)
-        nachname_lb.grid(row=2, column=0)
-        dalo_lb.grid(row=3, column=0)
-        star_lb.grid(row=4, column=0)
-        dachi_lb.grid(row=5, column=0)
-        sonstiges_lb.grid(row=6, column=0)
-
-        # add sonstiges
-
-        self.vorname_field = tk.Label(self.window, text=p.vorname)
-        self.nachname_field = tk.Label(self.window, text=p.nachname)
-        self.dalo_field = tk.Entry(self.window)
-        self.dalo_field.insert(0, best[0])
-        self.star_field = tk.Entry(self.window)
-        self.star_field.insert(0, best[1])
-        self.dachi_field = tk.Entry(self.window)
-        self.dachi_field.insert(0, best[2])
-        self.sonstiges_field = tk.Entry(self.window)
-        self.sonstiges_field.insert(0, best[3])
-
-        self.vorname_field.grid(row=1, column=1, ipadx="100")
-        self.nachname_field.grid(row=2, column=1, ipadx="100")
-        self.dalo_field.grid(row=3, column=1, ipadx="100")
-        self.star_field.grid(row=4, column=1, ipadx="100")
-        self.dachi_field.grid(row=5, column=1, ipadx="100")
-        self.sonstiges_field.grid(row=6, column=1, ipadx="100")
-
-        submit = tk.Button(self.window, text="Speichern", command=self.update)
-
-        submit.grid(row=11, column=1)
-
-        self.dalo_field.focus_set()  # set focus to first field
-        self.window.bind("<Escape>", lambda e: self.window.destroy())
+    def update(self, item):
+        row = item.row()
+        # TODO: check for empty
+        self.dbHandler.updateBestellungen(self.p_id_list[row], self.model.item(row, 2).text(), self.model.item(row, 3).text(), self.model.item(row, 4).text(), self.model.item(row, 5).text())
+        self.logger.info("Bestellung aktualisiert " + str(self.p_id_list[row]))
