@@ -4,6 +4,7 @@
 from person import Person
 from database import DataBase
 import sys
+import os
 
 # different windows
 from personenwindow import PersonenWindow
@@ -29,6 +30,10 @@ class MainApplication(QMainWindow):
         self.logger = logger
 
         self.frame = QWidget(self) # set frame to hold all content
+
+        # TODO this does NOT seem to work...
+        scriptDir = os.path.dirname(os.path.realpath(__file__))
+        self.setWindowIcon(QIcon(os.path.join(scriptDir,'icon.png')))
 
         self.logger.info("MainApplication started")
 
@@ -194,44 +199,26 @@ class MainApplication(QMainWindow):
 
         self.logger.info("main addMenubar done")
 
-    def downloadUpdates(self):
-        ret = updatechecker.download_and_export_updates()
-        if(ret):
-            self.label.configure(
-                text="Erfolgreich heruntergeladen.\nBitte starte das Program aus dem neuen Ordner neu.")
-        else:
-            self.label.configure(text="Ein Fehler ist aufgetreten.")
-        self.logger.info("main downloadUpdates done")
-
     def checkUpdates(self):
-        self.newWindow = tk.Toplevel(self.master)
-        self.newWindow.geometry("500x300")
-        self.newWindow.title("Updates suchen")
-        self.label = tk.Label(
-            self.newWindow, text="Stelle Verbindung mit Server her...")
-        self.label.pack()
+        self.setStatusTip("Stelle Verbindung mit Server her...")
+        self.update()
 
         ret = updatechecker.check_for_updates()
         if(ret == None):
-            print("An error occured")
-            self.label.configure(text="Ein Fehler ist aufgetreten.")
-            tk.Button(self.newWindow, text="Schliessen",
-                      command=self.newWindow.destroy).pack()
+            self.setStatusTip("Ein Fehler ist aufgetreten.")
 
         elif(ret):
             print("No update was found")
-            self.label.configure(text="Keine Updates gefunden.")
-            tk.Button(self.newWindow, text="Schliessen",
-                      command=self.newWindow.destroy).pack()
-
+            self.setStatusTip("Keine Updates gefunden.")
         else:
-            tk.Button(self.newWindow, text="Update herunterladen",
-                      command=self.downloadUpdates).pack()
-            self.label.configure(
-                text="Ein Update wurde gefunden.\nJetzt herunterladen?\nAchtung:\nDies kann eine Weile dauern!")
-            tk.Button(self.newWindow, text="Schliessen",
-                      command=self.newWindow.destroy).pack()
-        self.newWindow.bind("<Escape>", lambda e: self.newWindow.destroy())
+            self.setStatusTip("Das Update wird automatisch heruntergeladen.")
+            self.update()
+            ret = updatechecker.download_and_export_updates()
+            if(ret):
+                self.setStatusTip("Erfolgreich heruntergeladen. Bitte starte das Programm aus dem neuen Ordner neu.")
+            else:
+                self.setStatusTip("Ein Fehler ist aufgetreten.")
+            self.logger.info("main downloadUpdates done")
         self.logger.info("main checkUpdates done")
 
     @pyqtSlot()
