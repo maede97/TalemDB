@@ -1,7 +1,8 @@
 import datetime
 class Logger:
-    def __init__(self, file):
+    def __init__(self, file, doLogging):
         self.file = file
+        self.doLogging = doLogging
     
     def info(self, msg):
         self.__write("INFO",msg)
@@ -10,5 +11,6 @@ class Logger:
     def error(self,msg):
         self.__write("ERROR",msg)
     def __write(self,tag,msg):
-        with open(self.file,"a") as wr:
-            wr.write(str(datetime.datetime.now()) + "\t" + tag + ":\t\t" + msg + "\n")
+        if(self.doLogging):
+            with open(self.file,"a") as wr:
+                wr.write(str(datetime.datetime.now()) + "\t" + tag + ":\t\t" + msg + "\n")

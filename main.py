@@ -28,7 +28,7 @@ class MainApplication(QMainWindow):
 
         self.frame = QWidget(self) # set frame to hold all content
 
-        # TODO this does NOT seem to work...
+        # TODO icon
         scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.setWindowIcon(QIcon(os.path.join(scriptDir,'icon.png')))
 
@@ -222,16 +222,15 @@ class MainApplication(QMainWindow):
     @pyqtSlot()
     def showBestellungen(self):
         if(not self.bapp):
-            # TODO
             self.bapp = BestellungsWindow(self, self.dbHandler)
         else:
             self.bapp.destroy()
             self.bapp = BestellungsWindow(self, self.dbHandler)
         self.logger.info("main showBestellungen done")
+
     @pyqtSlot()
     def showExport(self):
         if(not self.eapp):
-            # TODO
             self.eapp = ExportWindow(self, self.dbHandler)
         else:
             self.eapp.destroy()
@@ -241,8 +240,8 @@ class MainApplication(QMainWindow):
     @pyqtSlot()
     def showPersonen(self):
         if(not self.papp):
-            # TODO
             self.papp = PersonenWindow(self, self.dbHandler)
+            pass
         else:
             self.papp.destroy()
             self.papp = PersonenWindow(self, self.dbHandler)
@@ -256,6 +255,7 @@ class MainApplication(QMainWindow):
             self.kapp.destroy()
             self.kapp = KundenWindow(self, self.dbHandler)
         self.logger.info("main showKunden done")
+
     @pyqtSlot()
     def showMitglieder(self):
         if(not self.mapp):
@@ -266,7 +266,7 @@ class MainApplication(QMainWindow):
         self.logger.info("main showMitglieder done")
 
 if __name__ == "__main__":
-    logger = Logger(config.LOGGER_FILE)
+    logger = Logger(config.LOGGER_FILE, False) # turn off logger
     app = QApplication(sys.argv)
     ex = MainApplication(logger)
     sys.exit(app.exec_())

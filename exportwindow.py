@@ -65,6 +65,9 @@ class ExportWindow:
         self.loadListBox(self.model)
         
         # TODO: bind esc
+    
+    def destroy(self,e=None):
+        self.frame.destroy()
 
     def selectKunden(self):
         self.tableView.clearSelection()
