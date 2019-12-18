@@ -79,7 +79,6 @@ class MainApplication(QMainWindow):
         self.addMenubar()
 
         self.dbHandler = DataBase(self.logger)
-        self.dbHandler.insertTestData()
 
         self.papp = None
         self.mapp = None

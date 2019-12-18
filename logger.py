@@ -1,6 +1,6 @@
 import datetime
 class Logger:
-    def __init__(self, file, doLogging):
+    def __init__(self, file, doLogging=False):
         self.file = file
         self.doLogging = doLogging
     
