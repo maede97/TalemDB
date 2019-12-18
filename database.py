@@ -9,7 +9,6 @@ class DataBase:
         self.conn = sqlite3.connect(config.DATABASE)
         self.cursor = self.conn.cursor()
 
-
         self.cursor.execute("CREATE TABLE IF NOT EXISTS personen(\
             id INTEGER PRIMARY KEY, anrede TEXT DEFAULT '', vorname TEXT,nachname TEXT,adresse TEXT DEFAULT '',\
             plz INTEGER DEFAULT 0,ort TEXT DEFAULT '',land TEXT DEFAULT 'CH', email TEXT DEFAULT '', telefon TEXT DEFAULT '', abonnement INTEGER DEFAULT 0)")
@@ -30,10 +29,14 @@ class DataBase:
     def executeSQL(self, sql):
         """dangerous function, execute user inputed sql"""
         ret = []
-        for row in self.cursor.execute(sql):
-            ret.append(row[:])
-        self.logger.info("database executeSQL done")
-
+        try:
+            for row in self.cursor.execute(sql):
+                ret.append(row[:])
+            self.logger.info("database executeSQL " + sql)
+        except Exception as e:
+            self.logger.error("executeSQL")
+            self.logger.error(str(e))
+            ret = [["An error occured. Please check your SQL-command."]]
         return ret
 
     def insertTestData(self):
@@ -76,8 +79,7 @@ class DataBase:
 
     def insertRechnungsData(self, pid, rechnungsart, rechnungsintervall):
         values = [pid, rechnungsart, rechnungsintervall]
-        self.cursor.execute(
-            "INSERT INTO rechnungen(personen_id, rechnungsart, rechnungsintervall) VALUES (?, ?, ?)", values)
+        self.cursor.execute("INSERT INTO rechnungen(personen_id, rechnungsart, rechnungsintervall) VALUES (?, ?, ?)", values)
         self.conn.commit()
         self.logger.info("database insertRechnungsData done")
 
@@ -110,7 +112,7 @@ class DataBase:
         self.cursor.execute("DELETE FROM rechnungen WHERE personen_id=?",[str(pid)])
         self.cursor.execute("DELETE FROM personen WHERE id=?",[str(pid)])
         self.conn.commit()
-        self.logger.info("database deletePerson done")
+        self.logger.info("database deletePerson " + str(pid))
 
     def insertPerson(self, person, kunde=False, mitglied=False, abo=False):
         values = [person.anrede, person.vorname, person.nachname, person.adresse,
@@ -146,7 +148,7 @@ class DataBase:
             p.setID(row[0])
             p.setAbo(row[10])
             personen.append(p)
-        self.logger.info("database getPersonen done")
+        self.logger.info("database getPersonen " + str(len(personen)))
         return personen
 
     def getKunden(self):
@@ -157,7 +159,7 @@ class DataBase:
             p.setID(row[0])
             p.setAbo(row[10])
             personen.append(p)
-        self.logger.info("database getKunden done")
+        self.logger.info("database getKunden " + str(len(personen)))
         return personen
 
     def getMitglieder(self):
@@ -168,7 +170,7 @@ class DataBase:
             p.setID(row[0])
             p.setAbo(row[10])
             personen.append(p)
-        self.logger.info("database getMitglieder done")
+        self.logger.info("database getMitglieder " + str(len(personen)))
         return personen
 
     def isKunde(self, id):

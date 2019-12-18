@@ -193,4 +193,5 @@ if __name__ == "__main__":
     root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='logo.png'))
     gui.pack(side="top", fill="both", expand=True)
     root.mainloop()
+    logger.info("*"*20)
     logger.info("Main Done")
