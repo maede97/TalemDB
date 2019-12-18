@@ -206,7 +206,7 @@ class DataBase:
             self.cursor.execute(
                 "DELETE FROM mitglieder WHERE mitglieder_id=?", [str(person.id)])
         self.conn.commit()
-        self.logger.info("database isMitglied done")
+        self.logger.info("database updatePerson " + str(person.id))
 
     def getPersonByID(self, id):
         personen = []
