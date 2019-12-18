@@ -1,6 +1,3 @@
-# write to excel:
-# https://www.geeksforgeeks.org/python-simple-registration-form-using-tkinter/
-
 from person import Person
 from database import DataBase
 import sys
@@ -82,6 +79,7 @@ class MainApplication(QMainWindow):
         self.addMenubar()
 
         self.dbHandler = DataBase(self.logger)
+        self.dbHandler.insertTestData()
 
         self.papp = None
         self.mapp = None
@@ -156,7 +154,7 @@ class MainApplication(QMainWindow):
         filemenu.addAction(runSQL)
 
         exitAct = QAction(QIcon('.'), 'Beenden', self)        
-        #exitAct.setShortcut('Ctrl+Q')
+        exitAct.setShortcut('Esc') # close app on exit
         exitAct.setStatusTip('Applikation beenden')
         exitAct.triggered.connect(qApp.quit)
         filemenu.addAction(exitAct) 
@@ -223,58 +221,52 @@ class MainApplication(QMainWindow):
 
     @pyqtSlot()
     def showBestellungen(self):
-        self.newWindow = tk.Toplevel(self.parent)
         if(not self.bapp):
-            self.bapp = BestellungsWindow(self.newWindow, self.dbHandler)
+            # TODO
+            self.bapp = BestellungsWindow(self, self.dbHandler)
         else:
             self.bapp.destroy()
-            self.bapp = BestellungsWindow(self.newWindow, self.dbHandler)
+            self.bapp = BestellungsWindow(self, self.dbHandler)
         self.logger.info("main showBestellungen done")
     @pyqtSlot()
     def showExport(self):
-        self.newWindow = tk.Toplevel(self.parent)
         if(not self.eapp):
-            self.eapp = ExportWindow(self.newWindow, self.dbHandler)
+            # TODO
+            self.eapp = ExportWindow(self, self.dbHandler)
         else:
             self.eapp.destroy()
-            self.eapp = ExportWindow(self.newWindow, self.dbHandler)
+            self.eapp = ExportWindow(self, self.dbHandler)
         self.logger.info("main showExport done")
 
     @pyqtSlot()
     def showPersonen(self):
-        self.newWindow = tk.Toplevel(self.parent)
         if(not self.papp):
-            self.papp = PersonenWindow(self.newWindow, self.dbHandler)
+            # TODO
+            self.papp = PersonenWindow(self, self.dbHandler)
         else:
             self.papp.destroy()
-            self.papp = PersonenWindow(self.newWindow, self.dbHandler)
+            self.papp = PersonenWindow(self, self.dbHandler)
         self.logger.info("main showPersonen done")
 
     @pyqtSlot()
     def showKunden(self):
-        self.newWindow = tk.Toplevel(self.parent)
         if(not self.kapp):
-            self.kapp = KundenWindow(self.newWindow, self.dbHandler)
+            self.kapp = KundenWindow(self, self.dbHandler)
         else:
             self.kapp.destroy()
-            self.kapp = KundenWindow(self.newWindow, self.dbHandler)
+            self.kapp = KundenWindow(self, self.dbHandler)
         self.logger.info("main showKunden done")
     @pyqtSlot()
     def showMitglieder(self):
-        self.newWindow = tk.Toplevel(self.parent)
         if(not self.mapp):
-            self.mapp = MitgliederWindow(self.newWindow, self.dbHandler)
+            self.mapp = MitgliederWindow(self, self.dbHandler)
         else:
             self.mapp.destroy()
-            self.mapp = MitgliederWindow(self.newWindow, self.dbHandler)
+            self.mapp = MitgliederWindow(self, self.dbHandler)
         self.logger.info("main showMitglieder done")
 
 if __name__ == "__main__":
-
     logger = Logger(config.LOGGER_FILE)
-
     app = QApplication(sys.argv)
     ex = MainApplication(logger)
     sys.exit(app.exec_())
-    logger.info("*"*20)
-    logger.info("Main Done")

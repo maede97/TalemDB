@@ -1,44 +1,46 @@
 from person import Person
 from database import DataBase
-import tkinter as tk
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 import config
 
 class MitgliederWindow:
     def __init__(self, master, dbHandler):
         self.master = master
+        self.frame = QWidget()
+
+        self.frame.show()
 
         self.dbHandler = dbHandler
 
-        self.master.title("TalemDB | Mitglieder")
-        self.master.geometry(config.WINDOW_SIZE)
-        self.master.tk.call('wm', 'iconphoto', self.master._w, tk.PhotoImage(file='logo.png'))
-        self.frame = tk.Frame(self.master)
-
-        tk.Label(self.master, text="Mitglieder").pack()
-        self.listNodes = tk.Listbox(self.frame, font=(
-            "Helvetica", 12), selectmode=tk.SINGLE, height=25,width=50)
-        self.listNodes.pack(side="left",fill="y")
-
-        scrollbar = tk.Scrollbar(self.frame, orient="vertical")
-        scrollbar.config(command=self.listNodes.yview)
-        scrollbar.pack(side="right",fill="y")
-
-        self.listNodes.config(yscrollcommand=scrollbar.set)
-
-        self.loadListBox()
+        self.frame.setWindowTitle("TalemDB | Mitglieder")
         
-        self.frame.pack()
-        self.master.bind("<Escape>",self.destroy)
+        # TODO set icon
+
+        horizontalGroupBox = QGroupBox()
+        layout = QGridLayout()
+
+        layout.addWidget(QLabel("Mitglieder", self.frame), 1, 0)
+
+        tableview = QTableView(self.frame)
+        layout.addWidget(tableview, 2, 0)
+        model = QStandardItemModel(self.frame)
+        tableview.setModel(model)
+        tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        model.setHorizontalHeaderLabels(['Vorname', 'Nachname', 'Adresse', 'PLZ', 'Ort'])
+        self.loadListBox(model)
+        
+        horizontalGroupBox.setLayout(layout)
+        windowLayout = QVBoxLayout()
+        windowLayout.addWidget(horizontalGroupBox)
+        self.frame.setLayout(windowLayout)
 
     def destroy(self,e=None):
-        self.master.destroy()
+        self.frame.destroy()
 
-    def loadListBox(self):
-        # delete all content from listbox
-        self.listNodes.delete(0, tk.END)
-
+    def loadListBox(self, model):
         self.p_id_list = []
 
         for p in self.dbHandler.getMitglieder():
-            self.listNodes.insert(tk.END, p.vorname + " " +p.nachname)
+            model.appendRow([QStandardItem(str(i)) for i in [p.vorname, p.nachname, p.adresse, p.plz, p.ort]])
             self.p_id_list.append(p.id)
