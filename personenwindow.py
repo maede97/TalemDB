@@ -13,7 +13,7 @@ class PersonenWindow(QWidget):
         super().__init__()
 
         self.master = master
-        # TODO: Icon
+        self.setWindowIcon(QIcon('logo.png'))
         self.dbHandler = dbHandler
 
         self.setWindowTitle("TalemDB | Personen")
@@ -166,5 +166,3 @@ class PersonenWindow(QWidget):
         button = QPushButton("Hinzufügen",self.window)
         layout.addWidget(button, 13, 0)
         button.clicked.connect(self.insert)
-
-        # TODO: bind ESC

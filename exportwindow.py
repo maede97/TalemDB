@@ -12,7 +12,7 @@ class ExportWindow(QWidget):
         super().__init__()
         self.master = master
         self.show()
-        # TODO: Icon
+        self.setWindowIcon(QIcon('logo.png'))
         self.dbHandler = dbHandler
 
         self.setWindowTitle("TalemDB | Export")

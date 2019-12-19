@@ -29,9 +29,7 @@ class MainApplication(QMainWindow):
 
         self.frame = QWidget(self) # set frame to hold all content
 
-        # TODO icon
-        scriptDir = os.path.dirname(os.path.realpath(__file__))
-        self.setWindowIcon(QIcon(os.path.join(scriptDir,'icon.png')))
+        self.setWindowIcon(QIcon('logo.png'))
 
         self.logger.info("MainApplication started")
 
