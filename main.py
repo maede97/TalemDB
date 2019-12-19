@@ -18,6 +18,7 @@ import config
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.Qt import Qt
 
 from logger import Logger
 
@@ -74,7 +75,7 @@ class MainApplication(QMainWindow):
 
         windowLayout = QVBoxLayout()
         windowLayout.addWidget(self.horizontalGroupBox)
-        self.frame.setLayout(windowLayout)
+        self.frame.setLayout(windowLayout)        
 
         self.addMenubar()
 
@@ -92,6 +93,20 @@ class MainApplication(QMainWindow):
 
         # Show the GUI
         self.show()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_P:
+            self.showPersonen()
+        elif event.key() == Qt.Key_E:
+            self.showExport()
+        elif event.key() == Qt.Key_M:
+            self.showMitglieder()
+        elif event.key() == Qt.Key_K:
+            self.showKunden()
+        elif event.key() == Qt.Key_B:
+            self.showBestellungen()
+        elif event.key() == Qt.Key_Escape:
+            qapp.quit()
 
     def donothing(self):
         self.logger.info("main donothing")
@@ -153,7 +168,6 @@ class MainApplication(QMainWindow):
         filemenu.addAction(runSQL)
 
         exitAct = QAction(QIcon('.'), 'Beenden', self)        
-        exitAct.setShortcut('Esc') # close app on exit
         exitAct.setStatusTip('Applikation beenden')
         exitAct.triggered.connect(qApp.quit)
         filemenu.addAction(exitAct) 

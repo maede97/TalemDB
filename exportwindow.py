@@ -2,29 +2,30 @@ from person import Person
 from database import DataBase
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5.Qt import Qt
 import excelwriter
 import config
 #
 # selectionBehavior to QAbstractItemView::SelectRows
-class ExportWindow:
+class ExportWindow(QWidget):
     def __init__(self, master, dbHandler):
+        super().__init__()
         self.master = master
-        self.frame = QWidget()
-        self.frame.show()
+        self.show()
         # TODO: Icon
         self.dbHandler = dbHandler
 
-        self.frame.setWindowTitle("TalemDB | Export")
+        self.setWindowTitle("TalemDB | Export")
 
         horizontalGroupBox = QGroupBox()
         layout = QGridLayout()
 
-        layout.addWidget(QLabel("Export", self.frame), 1, 0)
-        layout.addWidget(QLabel("Wähle alle Personen aus, die du exportieren möchtest.", self.frame), 2, 0)
+        layout.addWidget(QLabel("Export", self), 1, 0)
+        layout.addWidget(QLabel("Wähle alle Personen aus, die du exportieren möchtest.", self), 2, 0)
 
 
-        self.tableView = QTableView(self.frame)
-        self.model = QStandardItemModel(self.frame)
+        self.tableView = QTableView(self)
+        self.model = QStandardItemModel(self)
         self.tableView.setModel(self.model)
         self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -34,10 +35,10 @@ class ExportWindow:
         horizontalGroupBox.setLayout(layout)
         windowLayout = QVBoxLayout()
         windowLayout.addWidget(horizontalGroupBox)
-        self.frame.setLayout(windowLayout)
+        self.setLayout(windowLayout)
 
-        layout.addWidget(QLabel("Dateiname nach dem Export (ohne .xlsx)", self.frame), 3, 0)
-        self.filename = QLineEdit("Personen_Export", self.frame)
+        layout.addWidget(QLabel("Dateiname nach dem Export (ohne .xlsx)", self), 3, 0)
+        self.filename = QLineEdit("Personen_Export", self)
         layout.addWidget(self.filename, 4, 0)
 
         button = QPushButton("Personen Exportieren")
@@ -64,10 +65,9 @@ class ExportWindow:
 
         self.loadListBox(self.model)
         
-        # TODO: bind esc
-    
-    def destroy(self,e=None):
-        self.frame.destroy()
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.destroy()
 
     def selectKunden(self):
         self.tableView.clearSelection()

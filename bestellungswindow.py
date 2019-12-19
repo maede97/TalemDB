@@ -3,28 +3,29 @@ from database import DataBase
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from PyQt5.Qt import Qt
 import excelwriter
 import config
 
-class BestellungsWindow:
+class BestellungsWindow(QWidget):
     def __init__(self, master, dbHandler):
+        super().__init__()
         self.master = master
-        self.frame = QWidget()
-        self.frame.show()
+        self.show()
         self.dbHandler = dbHandler
 
-        self.frame.setWindowTitle("TalemDB | Bestellungen")
+        self.setWindowTitle("TalemDB | Bestellungen")
         
         # TODO Icon
 
         horizontalGroupBox = QGroupBox()
         layout = QGridLayout()
 
-        layout.addWidget(QLabel("Bestellungen", self.frame), 1, 0)
+        layout.addWidget(QLabel("Bestellungen", self), 1, 0)
 
-        tableview = QTableView(self.frame)
+        tableview = QTableView(self)
         layout.addWidget(tableview, 2, 0)
-        self.model = QStandardItemModel(self.frame)
+        self.model = QStandardItemModel(self)
         tableview.setModel(self.model)
         self.model.setHorizontalHeaderLabels(['Vorname', 'Nachname', 'Dalo', 'Star', 'Dachi', 'Sonstiges'])
         self.fillTable(self.model)
@@ -36,9 +37,11 @@ class BestellungsWindow:
         horizontalGroupBox.setLayout(layout)
         windowLayout = QVBoxLayout()
         windowLayout.addWidget(horizontalGroupBox)
-        self.frame.setLayout(windowLayout)
+        self.setLayout(windowLayout)
 
-        # TODO bind escape
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.destroy()
 
     def fillTable(self, model):
         self.p_id_list = []
@@ -48,9 +51,6 @@ class BestellungsWindow:
             best = self.dbHandler.getBestellungenById(p.id)
             self.p_id_list.append(p.id)
             model.appendRow([QStandardItem(str(j)) for j in [p.vorname, p.nachname, best[0], best[1], best[2], best[3]]])
-            
-    def destroy(self,e=None):
-        self.frame.destroy()
 
     def update(self, item):
         row = item.row()

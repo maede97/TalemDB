@@ -3,37 +3,39 @@ from database import DataBase
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from PyQt5.Qt import Qt
 import excelwriter
 import config
 
-class PersonenWindow:
+class PersonenWindow(QWidget):
     def __init__(self, master, dbHandler):
+
+        super().__init__()
+
         self.master = master
-        self.frame = QWidget()
         # TODO: Icon
-        # TODO: bind ESC
         self.dbHandler = dbHandler
 
-        self.frame.setWindowTitle("TalemDB | Personen")
+        self.setWindowTitle("TalemDB | Personen")
 
         horizontalGroupBox = QGroupBox()
         layout = QGridLayout()
         
-        button = QPushButton("Neue Person erfassen", self.frame)
+        button = QPushButton("Neue Person erfassen", self)
         button.clicked.connect(self.neue_person)
         layout.addWidget(button, 0,0)
 
-        button = QPushButton("Personen exportieren", self.frame)
+        button = QPushButton("Personen exportieren", self)
         button.clicked.connect(self.export_personen)
         layout.addWidget(button, 1, 0)
 
         layout.addWidget(QLabel("Personen"), 2, 0)
-        button = QPushButton("Markierte Person löschen", self.frame)
+        button = QPushButton("Markierte Person löschen", self)
         button.clicked.connect(self.ask_delete_person)
         layout.addWidget(button, 3, 0)
 
-        self.tableView = QTableView(self.frame)
-        self.model = QStandardItemModel(self.frame)
+        self.tableView = QTableView(self)
+        self.model = QStandardItemModel(self)
         self.tableView.setModel(self.model)
         self.tableView.setSelectionMode(QAbstractItemView.SingleSelection)
         self.model.setHorizontalHeaderLabels(['Anrede','Vorname', 'Nachname', 'Adresse', 'PLZ', 'Ort','Land','Email','Telefon', 'Kunde', 'Mitglied', 'Abonnent'])
@@ -43,22 +45,25 @@ class PersonenWindow:
         horizontalGroupBox.setLayout(layout)
         windowLayout = QVBoxLayout()
         windowLayout.addWidget(horizontalGroupBox)
-        self.frame.setLayout(windowLayout)
+        self.setLayout(windowLayout)
 
         layout.addWidget(self.tableView, 4, 0)
 
         self.loadListBox(self.model)
-        self.frame.show()
-
-    def destroy(self,e=None):
-        self.frame.destroy()
+        self.show()
+    
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.destroy()
 
     def ask_delete_person(self):
         # get selected row:
+        if(len(self.tableView.selectedIndexes()) < 1):
+            return
         pid = self.p_id_list[self.tableView.selectedIndexes()[0].row()]
         p = self.dbHandler.getPersonByID(pid)
 
-        msg = QMessageBox.question(self.frame, "Person löschen", "Soll die Person "+p.vorname + " "+p.nachname+" wirklich endgültig gelöscht werden?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        msg = QMessageBox.question(self, "Person löschen", "Soll die Person "+p.vorname + " "+p.nachname+" wirklich endgültig gelöscht werden?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if msg == QMessageBox.Yes:
             self.dbHandler.deletePerson(pid)
             self.model.removeRow(self.tableView.selectedIndexes()[0].row())
