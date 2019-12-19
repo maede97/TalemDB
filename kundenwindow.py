@@ -16,7 +16,7 @@ class KundenWindow(QWidget):
 
         self.setWindowTitle("TalemDB | Kunden")
         
-        # TODO set icon
+        self.setWindowIcon(QIcon('logo.png'))
 
         horizontalGroupBox = QGroupBox()
         layout = QGridLayout()

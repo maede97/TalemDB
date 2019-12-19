@@ -16,7 +16,7 @@ class MitgliederWindow(QWidget):
 
         self.setWindowTitle("TalemDB | Mitglieder")
         
-        # TODO icon
+        self.setWindowIcon(QIcon('logo.png'))
 
         horizontalGroupBox = QGroupBox()
         layout = QGridLayout()
