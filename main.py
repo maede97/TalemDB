@@ -106,7 +106,7 @@ class MainApplication(QMainWindow):
         elif event.key() == Qt.Key_B:
             self.showBestellungen()
         elif event.key() == Qt.Key_Escape:
-            qapp.quit()
+            qApp.quit()
 
     def donothing(self):
         self.logger.info("main donothing")
