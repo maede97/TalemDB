@@ -26,6 +26,7 @@ class BestellungsWindow(QWidget):
         tableview = QTableView(self)
         layout.addWidget(tableview, 2, 0)
         self.model = QStandardItemModel(self)
+        tableview.setSelectionMode(QAbstractItemView.SingleSelection)
         tableview.setModel(self.model)
         self.model.setHorizontalHeaderLabels(['Vorname', 'Nachname', 'Dalo', 'Star', 'Dachi', 'Sonstiges'])
         self.fillTable(self.model)

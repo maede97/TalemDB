@@ -33,6 +33,7 @@ class DataBase:
             for row in self.cursor.execute(sql):
                 ret.append(row[:])
             self.logger.info("database executeSQL " + sql)
+            self.conn.commit() 
         except Exception as e:
             self.logger.error("executeSQL")
             self.logger.error(str(e))
@@ -226,3 +227,10 @@ class DataBase:
             self.logger.error("database getPersonByID " + str(id))
             exit(1)
         return personen[0]
+
+    def getAufgaben(self):
+        aufgaben = []
+        for row in self.cursor.execute("SELECT * FROM aufgaben"):
+            # id, beschreib, zeitpunkt
+            aufgaben.append([row[0], row[1], row[2]])
+        return aufgaben

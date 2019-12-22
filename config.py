@@ -3,8 +3,6 @@
 
 CURRENT_VERSION = "v1.3.1"
 
-# WINDOW_SIZE="500x600"
-
 DATABASE = "database.db"
 
 LOGGER_FILE = "log.txt"

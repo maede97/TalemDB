@@ -23,19 +23,22 @@ from PyQt5.Qt import Qt
 from logger import Logger
 
 class MainApplication(QMainWindow):
+    """
+    Main Window for TalemDB
+    """
     def __init__(self, logger):
         super().__init__()
         self.logger = logger
 
-        self.frame = QWidget(self) # set frame to hold all content
+        self.frame = QWidget() # set frame to hold all content
+        self.setCentralWidget(self.frame)
 
         self.setWindowIcon(QIcon('logo.png'))
 
         self.logger.info("MainApplication started")
 
         self.setWindowTitle("TalemDB")
-        self.setGeometry(100,100,320,300)
-        self.frame.setGeometry(0,20,320,200)
+        self.setGeometry(100,100,370,520)
 
         # set up a layout
         self.horizontalGroupBox = QGroupBox()
@@ -79,6 +82,9 @@ class MainApplication(QMainWindow):
 
         self.dbHandler = DataBase(self.logger)
 
+        layout.addWidget(QLabel("Aufgaben",self.frame), 5, 0)
+        layout.addWidget(self.showAufgaben(), 6, 0)
+
         self.papp = None
         self.mapp = None
         self.kapp = None
@@ -91,8 +97,36 @@ class MainApplication(QMainWindow):
 
         # Show the GUI
         self.show()
+    
+    def showAufgaben(self):
+        """
+        Create a QTableView to show all tasks to do
+
+        Retuns
+        ------
+        QTableView holding all tasks inside it's model
+
+        """
+        self.aufgabe_id_list = []
+        tableview = QTableView(self.frame)
+        model = QStandardItemModel(self.frame)
+        tableview.setModel(model)
+        tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        model.setHorizontalHeaderLabels(["Beschreib","Zeitpunkt"])
+        for a in self.dbHandler.getAufgaben():
+            model.appendRow([QStandardItem(str(i)) for i in a[1:]])
+            self.aufgabe_id_list.append(a[0])
+        return tableview
 
     def keyPressEvent(self, event):
+        """
+        Handle key press event
+        
+        Parameters
+        ----------
+        event : QEvent
+            Event of key press
+        """
         if event.key() == Qt.Key_P:
             self.showPersonen()
         elif event.key() == Qt.Key_E:
@@ -106,13 +140,13 @@ class MainApplication(QMainWindow):
         elif event.key() == Qt.Key_Escape:
             qApp.quit()
 
-    def donothing(self):
-        self.logger.info("main donothing")
-        pass
-
     def sqlPopup(self):
+        """
+        Show a popup to enter SQL code
+        """
         self.popupsql = QWidget()
         self.popupsql.setWindowTitle("SQL ausführen")
+        self.popupsql.setWindowIcon(QIcon('logo.png'))
         self.sql_horizontalGroupBox = QGroupBox()
         self.sql_layout = QGridLayout()
         self.sqlentry = QTextEdit(self.popupsql)
@@ -132,6 +166,13 @@ class MainApplication(QMainWindow):
         self.logger.info("main sqlPopup shown")
     
     def execSQLPrompt(self):
+        """
+        Execute the entered SQL command
+        
+        Requires
+        --------
+        sqlPopup to be called, for self.sqlentry to exist
+        """
         ret = self.dbHandler.executeSQL(self.sqlentry.toPlainText())
         tableview = QTableView(self.popupsql)
         self.sql_layout.addWidget(tableview, 3, 0)
@@ -142,22 +183,10 @@ class MainApplication(QMainWindow):
             model.appendRow([QStandardItem(str(i)) for i in row])
         self.logger.info("main execSQLPrompt done")
 
-        # example for clicker
-    #     self.table.doubleClicked.connect(self.on_click)
- 
-    # def on_click(self, signal):
-    #     row = signal.row()  # RETRIEVES ROW OF CELL THAT WAS DOUBLE CLICKED
-    #     column = signal.column()  # RETRIEVES COLUMN OF CELL THAT WAS DOUBLE CLICKED
-    #     cell_dict = self.model.itemData(signal)  # RETURNS DICT VALUE OF SIGNAL
-    #     cell_value = cell_dict.get(0)  # RETRIEVE VALUE FROM DICT
- 
-    #     index = signal.sibling(row, 0)
-    #     index_dict = self.model.itemData(index)
-    #     index_value = index_dict.get(0)
-    #     print(
-    #         'Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.format(row, column, cell_value, index_value))
-
     def addMenubar(self):
+        """
+        Add a menubar to the main window
+        """
         menubar = self.menuBar()
         filemenu = menubar.addMenu('&Datei')
         runSQL = QAction(QIcon('logo.png'), 'SQL ausführen', self)
@@ -195,11 +224,11 @@ class MainApplication(QMainWindow):
         helpmenu = menubar.addMenu('Hilfe')
 
         temp = QAction('Hilfe',self)
-        temp.triggered.connect(self.donothing)
+        #temp.triggered.connect(self.donothing)
         helpmenu.addAction(temp)
 
         temp = QAction('Über',self)
-        temp.triggered.connect(self.donothing)
+        #temp.triggered.connect(self.donothing)
         helpmenu.addAction(temp)
 
         temp = QAction('Updates suchen',self)
@@ -209,6 +238,9 @@ class MainApplication(QMainWindow):
         self.logger.info("main addMenubar done")
 
     def checkUpdates(self):
+        """
+        Checks for updates
+        """
         self.setStatusTip("Stelle Verbindung mit Server her...")
         self.update()
 
@@ -277,7 +309,7 @@ class MainApplication(QMainWindow):
         self.logger.info("main showMitglieder done")
 
 if __name__ == "__main__":
-    logger = Logger(config.LOGGER_FILE, False) # turn off logger
+    logger = Logger(config.LOGGER_FILE, True)
     app = QApplication(sys.argv)
     ex = MainApplication(logger)
     sys.exit(app.exec_())
