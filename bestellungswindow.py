@@ -56,4 +56,3 @@ class BestellungsWindow(QWidget):
     def update(self, item):
         row = item.row()
         self.dbHandler.updateBestellungen(self.p_id_list[row], self.model.item(row, 2).text(), self.model.item(row, 3).text(), self.model.item(row, 4).text(), self.model.item(row, 5).text())
-        self.logger.info("Bestellung aktualisiert " + str(self.p_id_list[row]))

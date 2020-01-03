@@ -104,7 +104,7 @@ class DataBase:
             self.cursor.execute(
                 "INSERT INTO bestellungen(personen_id, sorte_dalo, sorte_star, sorte_dachi, sonstiges) VALUES (?, ?, ?, ?, ?)", values)
         self.conn.commit()
-        self.logger.info("database updateBestellungen done")
+        self.logger.info("database updateBestellungen " + str(pid))
 
     def deletePerson(self, pid):
         self.cursor.execute("DELETE FROM kunden WHERE kunden_id=?",[str(pid)])
