@@ -116,6 +116,7 @@ class PersonenWindow(QWidget):
         self.window = QWidget()
         self.window.show()
         self.window.setWindowTitle("TalemDB | Neue Person")
+        self.window.setWindowIcon(QIcon("logo.png"))
         horizontalGroupBox = QGroupBox()
         layout = QGridLayout()
 
