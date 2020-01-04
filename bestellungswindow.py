@@ -11,7 +11,7 @@ class BestellungsWindow(QWidget):
     def __init__(self, master, dbHandler):
         super().__init__()
         self.master = master
-        self.show()
+        self.showMaximized()
         self.dbHandler = dbHandler
 
         self.setWindowTitle("TalemDB | Bestellungen")

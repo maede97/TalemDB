@@ -34,11 +34,24 @@ class PersonenWindow(QWidget):
         button.clicked.connect(self.ask_delete_person)
         layout.addWidget(button, 3, 0)
 
+
+        self.search_field = QLineEdit(self)
+        layout.addWidget(self.search_field, 4, 0)
+        AraKey = self.dbHandler.getAllPersonenNames()
+        ModAra = QStringListModel()
+        ModAra.setStringList(AraKey)
+        ComAra = QCompleter()
+        ComAra.setModel(ModAra)
+        self.search_field.setCompleter(ComAra)
+
         self.tableView = QTableView(self)
         self.model = QStandardItemModel(self)
         self.tableView.setModel(self.model)
         self.tableView.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.model.setHorizontalHeaderLabels(['Anrede','Vorname', 'Nachname', 'Adresse', 'PLZ', 'Ort','Land','Email','Telefon', 'Kunde', 'Mitglied', 'Abonnent'])
+        # table header is set in loadListBox
+
+        # Connect search field
+        self.search_field.returnPressed.connect(lambda: self.loadListBox(self.model))
 
         self.model.itemChanged.connect(self.update)
 
@@ -47,10 +60,10 @@ class PersonenWindow(QWidget):
         windowLayout.addWidget(horizontalGroupBox)
         self.setLayout(windowLayout)
 
-        layout.addWidget(self.tableView, 4, 0)
+        layout.addWidget(self.tableView, 5, 0)
 
         self.loadListBox(self.model)
-        self.show()
+        self.showMaximized()
     
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
@@ -73,10 +86,21 @@ class PersonenWindow(QWidget):
             "TalemDB_Personen.xlsx", self.dbHandler.getPersonen(), "Personenverzeichnis")
 
     def loadListBox(self, model):
+        # sort out when text not in there
         self.p_id_list = []
+        model.clear()
+        model.setHorizontalHeaderLabels(['Anrede','Vorname', 'Nachname', 'Adresse', 'PLZ', 'Ort','Land','Email','Telefon', 'Kunde', 'Mitglied', 'Abonnent'])
+
         for p in self.dbHandler.getPersonen():
-            model.appendRow([QStandardItem(str(i)) for i in [p.anrede, p.vorname, p.nachname, p.adresse, p.plz, p.ort, p.land, p.email, p.telefon, int(self.dbHandler.isKunde(p.id)), int(self.dbHandler.isMitglied(p.id)), p.abonnement]])
-            self.p_id_list.append(p.id)
+            curr = [QStandardItem(str(i)) for i in [p.anrede, p.vorname, p.nachname, p.adresse, p.plz, p.ort, p.land, p.email, p.telefon, int(self.dbHandler.isKunde(p.id)), int(self.dbHandler.isMitglied(p.id)), p.abonnement]]
+            if(self.search_field.text() == ""):
+                model.appendRow(curr)
+                self.p_id_list.append(p.id)
+            elif(self.search_field.text().lower() in ",".join([str(i).lower() for i in [p.anrede, p.vorname, p.nachname, p.adresse, p.plz, p.ort, p.land, p.email, p.telefon, int(self.dbHandler.isKunde(p.id)), int(self.dbHandler.isMitglied(p.id)), p.abonnement]])):
+                model.appendRow(curr)
+                self.p_id_list.append(p.id)
+            else:
+                continue
 
     def insert(self):
         if(self.vorname_field.text() == "" or self.nachname_field.text() == ""):
@@ -91,16 +115,7 @@ class PersonenWindow(QWidget):
             int(self.mitglieder_check.checkState() == Qt.Checked),
             int(self.abo_check.checkState() == Qt.Checked))
         self.window.destroy()
-        # insert new entry into listbox
-        self.model.appendRow(
-            [QStandardItem(str(i)) for i in [
-                p.anrede, p.vorname, p.nachname, p.adresse, p.plz, p.ort, p.land, p.email, p.telefon,
-                int(self.kunden_check.checkState() == Qt.Checked),
-                int(self.mitglieder_check.checkState() == Qt.Checked),
-                int(self.abo_check.checkState() == Qt.Checked)
-                ]
-            ])
-        self.p_id_list.append(pid)
+        self.loadListBox(self.model)
 
     def update(self, item):
         row = item.row()

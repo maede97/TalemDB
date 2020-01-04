@@ -28,6 +28,20 @@ class DataBase:
             "CREATE TABLE IF NOT EXISTS infos(id INTEGER PRIMARY KEY, personen_id INTEGER, zwei_jaehrlich INTEGER DEFAULT 0, kafi_updates INTEGER DEFAULT 0, FOREIGN KEY (personen_id) REFERENCES personen(id))"
         )
         self.logger.info("database __init__ done")
+    
+    def getAllPersonenNames(self):
+        """returns an array with all vornamen and nachnamen"""
+        ret = set()
+        try:
+            for row in self.cursor.execute("SELECT vorname, nachname FROM personen"):
+                ret.add(row[0])
+                ret.add(row[1])
+            ret = list(ret)
+        except Exception as e:
+            self.logger.error("getAllPersonenNames")
+            self.logger.error(str(e))
+            ret = []
+        return ret
 
     def executeSQL(self, sql):
         """dangerous function, execute user inputed sql"""

@@ -11,7 +11,7 @@ class ExportWindow(QWidget):
     def __init__(self, master, dbHandler):
         super().__init__()
         self.master = master
-        self.show()
+        self.showMaximized()
         self.setWindowIcon(QIcon('logo.png'))
         self.dbHandler = dbHandler
 

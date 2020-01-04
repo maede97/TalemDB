@@ -96,7 +96,7 @@ class MainApplication(QMainWindow):
         self.logger.info("MainApplication __init__ done")
 
         # Show the GUI
-        self.show()
+        self.show() # others are maximised, however this is not
     
     def showAufgaben(self):
         """

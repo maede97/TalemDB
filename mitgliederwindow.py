@@ -10,7 +10,7 @@ class MitgliederWindow(QWidget):
         super().__init__()
         self.master = master
 
-        self.show()
+        self.showMaximized()
 
         self.dbHandler = dbHandler
 
