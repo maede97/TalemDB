@@ -11,7 +11,7 @@ class DataBase:
 
         self.cursor.execute("CREATE TABLE IF NOT EXISTS personen(\
             id INTEGER PRIMARY KEY, anrede TEXT DEFAULT '', vorname TEXT,nachname TEXT,adresse TEXT DEFAULT '',\
-            plz INTEGER DEFAULT 0,ort TEXT DEFAULT '',land TEXT DEFAULT 'CH', email TEXT DEFAULT '', telefon TEXT DEFAULT '', abonnement INTEGER DEFAULT 0)")
+            plz INTEGER DEFAULT 0,ort TEXT DEFAULT '',land TEXT DEFAULT 'CH', email TEXT DEFAULT '', telefon TEXT DEFAULT '', abonnement INTEGER DEFAULT 0, kommentar TEXT DEFAULT '')")
         self.cursor.execute("CREATE TABLE IF NOT EXISTS rechnungen(\
             id INTEGER PRIMARY KEY, personen_id INTEGER, rechnungsart TEXT DEFAULT '', rechnungsintervall INTEGER DEFAULT 0, erstbestellung DATE DEFAULT 0,\
             FOREIGN KEY (personen_id) REFERENCES personen(id))")
@@ -19,11 +19,14 @@ class DataBase:
             sorte_dalo REAL DEFAULT 0, sorte_star REAL DEFAULT 0, sorte_dachi REAL DEFAULT 0, sonstiges TEXT DEFAULT '',\
             FOREIGN KEY(personen_id) REFERENCES personen(id))")
         self.cursor.execute(
-            "CREATE TABLE IF NOT EXISTS kunden(id INTEGER PRIMARY KEY, kunden_id INTEGER, FOREIGN KEY (kunden_id) REFERENCES personen (id))")
+            "CREATE TABLE IF NOT EXISTS kunden(id INTEGER PRIMARY KEY, kunden_id INTEGER, gefunden_via TEXT DEFAULT '', FOREIGN KEY (kunden_id) REFERENCES personen (id))")
         self.cursor.execute(
             "CREATE TABLE IF NOT EXISTS mitglieder(id INTEGER PRIMARY KEY, mitglieder_id INTEGER, FOREIGN KEY (mitglieder_id) REFERENCES personen (id))")
         self.cursor.execute(
             "CREATE TABLE IF NOT EXISTS aufgaben(id INTEGER PRIMARY KEY, beschreib TEXT DEFAULT '', zeitpunkt DATETIME)")
+        self.cursor.execute(
+            "CREATE TABLE IF NOT EXISTS infos(id INTEGER PRIMARY KEY, personen_id INTEGER, zwei_jaehrlich INTEGER DEFAULT 0, kafi_updates INTEGER DEFAULT 0, FOREIGN KEY (personen_id) REFERENCES personen(id))"
+        )
         self.logger.info("database __init__ done")
 
     def executeSQL(self, sql):
