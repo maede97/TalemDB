@@ -9,6 +9,7 @@ from mitgliederwindow import MitgliederWindow
 from kundenwindow import KundenWindow
 from exportwindow import ExportWindow
 from bestellungswindow import BestellungsWindow
+from abonnentenwindow import AbonnentenWindow
 
 # varia
 import updatechecker
@@ -60,15 +61,20 @@ class MainApplication(QMainWindow):
         button.clicked.connect(self.showKunden)
         layout.addWidget(button,2,0)
 
+        button = QPushButton("Abonennten", self)
+        button.setToolTip("Zeige Abonennten")
+        button.clicked.connect(self.showAbonnenten)
+        layout.addWidget(button,3,0)
+
         button = QPushButton("Export", self)
         button.setToolTip("Exportieren")
         button.clicked.connect(self.showExport)
-        layout.addWidget(button,3,0)
+        layout.addWidget(button,4,0)
 
         button = QPushButton("Bestellungen", self)
         button.setToolTip("Zeige Bestellungen")
         button.clicked.connect(self.showBestellungen)
-        layout.addWidget(button,4,0)
+        layout.addWidget(button,5,0)
 
         self.statusBar().showMessage('Program geladen.')
         
@@ -82,14 +88,15 @@ class MainApplication(QMainWindow):
 
         self.dbHandler = DataBase(self.logger)
 
-        layout.addWidget(QLabel("Aufgaben",self.frame), 5, 0)
-        layout.addWidget(self.showAufgaben(), 6, 0)
+        layout.addWidget(QLabel("Aufgaben",self.frame), 6, 0)
+        layout.addWidget(self.showAufgaben(), 7, 0)
 
         self.papp = None
         self.mapp = None
         self.kapp = None
         self.eapp = None
         self.bapp = None
+        self.aapp = None
 
         self.popupsql = None
 
@@ -137,6 +144,8 @@ class MainApplication(QMainWindow):
             self.showKunden()
         elif event.key() == Qt.Key_B:
             self.showBestellungen()
+        elif event.key() == Qt.Key_A:
+            self.showAbonnenten()
         elif event.key() == Qt.Key_Escape:
             qApp.quit()
 
@@ -215,6 +224,10 @@ class MainApplication(QMainWindow):
 
         temp = QAction('Bestellungen',self)
         temp.triggered.connect(self.showBestellungen)
+        windowmenu.addAction(temp)
+
+        temp = QAction('Abonnenten', self)
+        temp.triggered.connect(self.showAbonnenten)
         windowmenu.addAction(temp)
 
         temp = QAction('Rechnungen',self)
@@ -307,6 +320,15 @@ class MainApplication(QMainWindow):
             self.mapp.destroy()
             self.mapp = MitgliederWindow(self, self.dbHandler)
         self.logger.info("main showMitglieder done")
+
+    @pyqtSlot()
+    def showAbonnenten(self):
+        if(not self.aapp):
+            self.aapp = AbonnentenWindow(self, self.dbHandler)
+        else:
+            self.aapp.destroy()
+            self.aapp = AbonnentenWindow(self, self.dbHandler)
+        self.logger.info("main showAbonnenten done")
 
 if __name__ == "__main__":
     logger = Logger(config.LOGGER_FILE, True)

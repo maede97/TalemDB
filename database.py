@@ -158,9 +158,9 @@ class DataBase:
         self.cursor.execute("DELETE FROM aufgaben")
         self.logger.info("database dropAll done")
 
-    def getPersonen(self):
+    def getPersonen(self, where_clause=''):
         personen = []
-        for row in self.cursor.execute("SELECT id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen ORDER BY nachname ASC"):
+        for row in self.cursor.execute("SELECT id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen {} ORDER BY nachname ASC".format(where_clause)):
             p = Person(row[1], row[2], row[3], row[4],
                        row[5], row[6], row[7], row[8], row[9])
             p.setID(row[0])
