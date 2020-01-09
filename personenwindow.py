@@ -34,7 +34,6 @@ class PersonenWindow(QWidget):
         button.clicked.connect(self.ask_delete_person)
         layout.addWidget(button, 3, 0)
 
-
         self.search_field = QLineEdit(self)
         layout.addWidget(self.search_field, 4, 0)
         AraKey = self.dbHandler.getAllPersonenNames()

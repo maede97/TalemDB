@@ -21,10 +21,14 @@ class KundenWindow(QWidget):
         horizontalGroupBox = QGroupBox()
         layout = QGridLayout()
 
-        layout.addWidget(QLabel("Kunden", self), 1, 0)
+        temp = QPushButton('Mailadressen kopieren', self)
+        temp.clicked.connect(self.sendEmail)        
+        layout.addWidget(temp, 1,0)
+
+        layout.addWidget(QLabel("Kunden", self), 2, 0)
 
         tableview = QTableView(self)
-        layout.addWidget(tableview, 2, 0)
+        layout.addWidget(tableview, 3, 0)
         model = QStandardItemModel(self)
         tableview.setModel(model)
         tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -35,6 +39,19 @@ class KundenWindow(QWidget):
         windowLayout = QVBoxLayout()
         windowLayout.addWidget(horizontalGroupBox)
         self.setLayout(windowLayout)
+
+    def sendEmail(self):
+        """ opens email client to send email to all persons here"""
+        emails = []
+        for p in self.dbHandler.getKunden():
+            # simple check if email even exists
+            if('@' in p.email):
+                emails.append(p.email)
+            else:
+                # TODO show alert, that not existed
+                pass
+        clip = QGuiApplication.clipboard()
+        clip.setText(";\n".join(emails))
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
