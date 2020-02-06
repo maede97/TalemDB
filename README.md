@@ -1,8 +1,9 @@
 # TalemDB
+Datenbank-Tool für Talem
 
 [![Actions Status](https://github.com/maede97/TalemDB/workflows/TalemCI/badge.svg)](https://github.com/maede97/TalemDB/actions)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/maede97/TalemDB)
 
-Datenbank-Tool für Talem
 
 ## Dependencies
 
