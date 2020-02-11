@@ -88,166 +88,236 @@ class DataBase:
     def getBestellungenById(self, id):
         """return array of [dalo,star,dachi] in kg each"""
         kaffees = []
-        for row in self.cursor.execute("SELECT sorte_dalo,sorte_star,sorte_dachi,sonstiges FROM bestellungen WHERE personen_id=?", [str(id)]):
-            kaffees.append([row[0], row[1], row[2], row[3]])
-        # should only be one entry per person
-        self.logger.info("database getBestellungenById " + str(id))
-
+        try:
+            for row in self.cursor.execute("SELECT sorte_dalo,sorte_star,sorte_dachi,sonstiges FROM bestellungen WHERE personen_id=?", [str(id)]):
+                kaffees.append([row[0], row[1], row[2], row[3]])
+            # should only be one entry per person
+            self.logger.info("database getBestellungenById " + str(id))
+        except Exception as e:
+            self.logger.error("getBestellungenById")
+            self.logger.error(str(e))
+            return [0, 0, 0, "FEHLER."]
         return kaffees[0] if len(kaffees) > 0 else [0, 0, 0, ""]
 
     def insertRechnungsData(self, pid, rechnungsart, rechnungsintervall):
         values = [pid, rechnungsart, rechnungsintervall]
-        self.cursor.execute("INSERT INTO rechnungen(personen_id, rechnungsart, rechnungsintervall) VALUES (?, ?, ?)", values)
-        self.conn.commit()
-        self.logger.info("database insertRechnungsData done")
+        try:
+            self.cursor.execute("INSERT INTO rechnungen(personen_id, rechnungsart, rechnungsintervall) VALUES (?, ?, ?)", values)
+            self.conn.commit()
+            self.logger.info("database insertRechnungsData done")
+        except Exception as e:
+            self.logger.error("insertRechnungsData")
+            self.logger.error(str(e))
 
     def getRechnungsData(self, pid):
         """get rechnungsart,rechnungsintervall,erstbestellung from personen_id"""
-        self.logger.info("database getRechnungsData")
-        for row in self.cursor.execute("SELECT rechnungsart,rechnungsintervall,erstbestellung FROM rechnungen WHERE personen_id=?", [str(pid)]):
-            return row
-        return None
+        try:
+            self.logger.info("database getRechnungsData")
+            for row in self.cursor.execute("SELECT rechnungsart,rechnungsintervall,erstbestellung FROM rechnungen WHERE personen_id=?", [str(pid)]):
+                return row
+            return None
+        except Exception as e:
+            self.logger.error("getRechnungsData " + str(pid))
+            self.logger.error(str(e))
 
     def updateBestellungen(self, pid, dalo, star, dachi, sonstiges):
-        values = [str(pid), str(dalo), str(star), str(dachi), sonstiges]
-        has = False
-        for _ in self.cursor.execute("SELECT * FROM bestellungen WHERE personen_id=?", [str(pid)]):
-            has = True
-        if(has):
-            values = [str(dalo), str(star), str(dachi), sonstiges, str(pid)]
-            self.cursor.execute(
-                "UPDATE bestellungen SET sorte_dalo=?, sorte_star=?,sorte_dachi=?,sonstiges=? WHERE personen_id=?", values)
-        else:
-            self.cursor.execute(
-                "INSERT INTO bestellungen(personen_id, sorte_dalo, sorte_star, sorte_dachi, sonstiges) VALUES (?, ?, ?, ?, ?)", values)
-        self.conn.commit()
-        self.logger.info("database updateBestellungen " + str(pid))
+        try:
+            values = [str(pid), str(dalo), str(star), str(dachi), sonstiges]
+            has = False
+            for _ in self.cursor.execute("SELECT * FROM bestellungen WHERE personen_id=?", [str(pid)]):
+                has = True
+            if(has):
+                values = [str(dalo), str(star), str(dachi), sonstiges, str(pid)]
+                self.cursor.execute(
+                    "UPDATE bestellungen SET sorte_dalo=?, sorte_star=?,sorte_dachi=?,sonstiges=? WHERE personen_id=?", values)
+            else:
+                self.cursor.execute(
+                    "INSERT INTO bestellungen(personen_id, sorte_dalo, sorte_star, sorte_dachi, sonstiges) VALUES (?, ?, ?, ?, ?)", values)
+            self.conn.commit()
+            self.logger.info("database updateBestellungen " + str(pid))
+        except Exception as e:
+            self.logger.error("updateBestellungen")
+            self.logger.error(str(e))
 
     def deletePerson(self, pid):
-        self.cursor.execute("DELETE FROM kunden WHERE kunden_id=?",[str(pid)])
-        self.cursor.execute("DELETE FROM mitglieder WHERE mitglieder_id=?",[str(pid)])
-        self.cursor.execute("DELETE FROM bestellungen WHERE personen_id=?",[str(pid)])
-        self.cursor.execute("DELETE FROM rechnungen WHERE personen_id=?",[str(pid)])
-        self.cursor.execute("DELETE FROM personen WHERE id=?",[str(pid)])
-        self.conn.commit()
-        self.logger.info("database deletePerson " + str(pid))
+        try:
+            self.cursor.execute("DELETE FROM kunden WHERE kunden_id=?",[str(pid)])
+            self.cursor.execute("DELETE FROM mitglieder WHERE mitglieder_id=?",[str(pid)])
+            self.cursor.execute("DELETE FROM bestellungen WHERE personen_id=?",[str(pid)])
+            self.cursor.execute("DELETE FROM rechnungen WHERE personen_id=?",[str(pid)])
+            self.cursor.execute("DELETE FROM personen WHERE id=?",[str(pid)])
+            self.conn.commit()
+            self.logger.info("database deletePerson " + str(pid))
+            return True
+        except Exception as e:
+            self.logger.error("deletePerson")
+            self.logger.error(str(e))
+            return False
 
     def insertPerson(self, person, kunde=False, mitglied=False, abo=False):
-        values = [person.anrede, person.vorname, person.nachname, person.adresse,
-                  person.plz, person.ort, person.land, person.email, person.telefon, abo]
-        self.cursor.execute(
-            "INSERT INTO personen(anrede,vorname,nachname,adresse,plz,ort,land,email,telefon, abonnement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", values)
-        pid = str(self.cursor.lastrowid)
-        if(kunde or mitglied):
-            if kunde:
-                self.cursor.execute(
-                    "INSERT INTO kunden(kunden_id) VALUES(?)", [pid])
-            if mitglied:
-                self.cursor.execute(
-                    "INSERT INTO mitglieder(mitglieder_id) VALUES(?)", [pid])
-        self.conn.commit()
-        self.logger.info("database insertPerson done")
-        return pid
+        try:
+            values = [person.anrede, person.vorname, person.nachname, person.adresse,
+                    person.plz, person.ort, person.land, person.email, person.telefon, abo]
+            self.cursor.execute(
+                "INSERT INTO personen(anrede,vorname,nachname,adresse,plz,ort,land,email,telefon, abonnement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", values)
+            pid = str(self.cursor.lastrowid)
+            if(kunde or mitglied):
+                if kunde:
+                    self.cursor.execute(
+                        "INSERT INTO kunden(kunden_id) VALUES(?)", [pid])
+                if mitglied:
+                    self.cursor.execute(
+                        "INSERT INTO mitglieder(mitglieder_id) VALUES(?)", [pid])
+            self.conn.commit()
+            self.logger.info("database insertPerson done")
+            return pid
+        except Exception as e:
+            self.logger.error("insertPerson")
+            self.logger.error(str(e))
+            return -1
 
     def dropAll(self):
-        self.cursor.execute("DELETE FROM kunden")
-        self.cursor.execute("DELETE FROM mitglieder")
-        self.cursor.execute("DELETE FROM personen")
-        self.cursor.execute("DELETE FROM bestellungen")
-        self.cursor.execute("DELETE FROM rechnungen")
-        self.cursor.execute("DELETE FROM aufgaben")
-        self.logger.info("database dropAll done")
+        try:
+            self.cursor.execute("DELETE FROM kunden")
+            self.cursor.execute("DELETE FROM mitglieder")
+            self.cursor.execute("DELETE FROM personen")
+            self.cursor.execute("DELETE FROM bestellungen")
+            self.cursor.execute("DELETE FROM rechnungen")
+            self.cursor.execute("DELETE FROM aufgaben")
+            self.logger.info("database dropAll done")
+        except:
+            self.logger.error("DropAll")
 
     def getPersonen(self, where_clause=''):
-        personen = []
-        for row in self.cursor.execute("SELECT id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen {} ORDER BY nachname ASC".format(where_clause)):
-            p = Person(row[1], row[2], row[3], row[4],
-                       row[5], row[6], row[7], row[8], row[9])
-            p.setID(row[0])
-            p.setAbo(row[10])
-            personen.append(p)
-        self.logger.info("database getPersonen " + str(len(personen)))
+        try:
+            personen = []
+            for row in self.cursor.execute("SELECT id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen {} ORDER BY nachname ASC".format(where_clause)):
+                p = Person(row[1], row[2], row[3], row[4],
+                        row[5], row[6], row[7], row[8], row[9])
+                p.setID(row[0])
+                p.setAbo(row[10])
+                personen.append(p)
+            self.logger.info("database getPersonen " + str(len(personen)))
+        except Exception as e:
+            self.logger.error("database getPersonen")
+            self.logger.error(str(e))
+            return []
         return personen
 
     def getKunden(self):
-        personen = []
-        for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen,kunden WHERE kunden_id = personen.id ORDER BY personen.nachname ASC"):
-            p = Person(row[1], row[2], row[3], row[4],
-                       row[5], row[6], row[7], row[8], row[9])
-            p.setID(row[0])
-            p.setAbo(row[10])
-            personen.append(p)
-        self.logger.info("database getKunden " + str(len(personen)))
-        return personen
+        try:
+            personen = []
+            for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen,kunden WHERE kunden_id = personen.id ORDER BY personen.nachname ASC"):
+                p = Person(row[1], row[2], row[3], row[4],
+                        row[5], row[6], row[7], row[8], row[9])
+                p.setID(row[0])
+                p.setAbo(row[10])
+                personen.append(p)
+            self.logger.info("database getKunden " + str(len(personen)))
+            return personen
+        except Exception as e:
+            self.logger.error("getKunden")
+            self.logger.error(str(e))
+            return []
 
     def getMitglieder(self):
-        personen = []
-        for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen,mitglieder WHERE mitglieder_id = personen.id ORDER BY personen.nachname ASC"):
-            p = Person(row[1], row[2], row[3], row[4],
-                       row[5], row[6], row[7], row[8], row[9])
-            p.setID(row[0])
-            p.setAbo(row[10])
-            personen.append(p)
-        self.logger.info("database getMitglieder " + str(len(personen)))
-        return personen
+        try:
+            personen = []
+            for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen,mitglieder WHERE mitglieder_id = personen.id ORDER BY personen.nachname ASC"):
+                p = Person(row[1], row[2], row[3], row[4],
+                        row[5], row[6], row[7], row[8], row[9])
+                p.setID(row[0])
+                p.setAbo(row[10])
+                personen.append(p)
+            self.logger.info("database getMitglieder " + str(len(personen)))
+            return personen
+        except Exception as e:
+            self.logger.error("getMitglieder")
+            self.logger.error(str(e))
+            return []
 
     def isKunde(self, id):
-        self.cursor.execute(
-            "SELECT * FROM kunden WHERE kunden_id=?", [str(id)])
-        self.logger.info("database isKunde " + str(id))
-        return not self.cursor.fetchone() == None
+        try:
+            self.cursor.execute(
+                "SELECT * FROM kunden WHERE kunden_id=?", [str(id)])
+            self.logger.info("database isKunde " + str(id))
+            return not self.cursor.fetchone() == None
+        except Exception as e:
+            self.logger.error("isKunde " + str(id))
+            self.logger.error(str(e))
+            return False
+
 
     def isMitglied(self, id):
-        self.cursor.execute(
-            "SELECT * FROM mitglieder WHERE mitglieder_id=?", [str(id)])
-        self.logger.info("database isMitglied " + str(id))
-        return not self.cursor.fetchone() == None
+        try:
+            self.cursor.execute(
+                "SELECT * FROM mitglieder WHERE mitglieder_id=?", [str(id)])
+            self.logger.info("database isMitglied " + str(id))
+            return not self.cursor.fetchone() == None
+        except Exception as e:
+            self.logger.error("isMitglied " + str(id))
+            self.logger.error(str(e))
+            return False
 
     def updatePerson(self, person, kunde, mitglied, abo):
-        values = [person.anrede, person.vorname, person.nachname, person.adresse,
-                  person.plz, person.ort, person.land, person.email, person.telefon, abo, str(person.id)]
-        self.cursor.execute(
-            "UPDATE personen SET anrede=?, vorname=?, nachname=?, adresse=?, plz=?, ort=?, land=?, email=?, telefon=?, abonnement=? WHERE id=?", values)
-        if kunde:
-            if not self.isKunde(person.id):
-                self.cursor.execute(
-                    "INSERT INTO kunden(kunden_id) VALUES(?)", [str(person.id)])
-        else:
+        try:
+            values = [person.anrede, person.vorname, person.nachname, person.adresse,
+                    person.plz, person.ort, person.land, person.email, person.telefon, abo, str(person.id)]
             self.cursor.execute(
-                "DELETE FROM kunden WHERE kunden_id=?", [str(person.id)])
+                "UPDATE personen SET anrede=?, vorname=?, nachname=?, adresse=?, plz=?, ort=?, land=?, email=?, telefon=?, abonnement=? WHERE id=?", values)
+            if kunde:
+                if not self.isKunde(person.id):
+                    self.cursor.execute(
+                        "INSERT INTO kunden(kunden_id) VALUES(?)", [str(person.id)])
+            else:
+                self.cursor.execute(
+                    "DELETE FROM kunden WHERE kunden_id=?", [str(person.id)])
 
-        if mitglied:
-            if not self.isMitglied(person.id):
+            if mitglied:
+                if not self.isMitglied(person.id):
+                    self.cursor.execute(
+                        "INSERT INTO mitglieder(mitglieder_id) VALUES(?)", [str(person.id)])
+            else:
                 self.cursor.execute(
-                    "INSERT INTO mitglieder(mitglieder_id) VALUES(?)", [str(person.id)])
-        else:
-            self.cursor.execute(
-                "DELETE FROM mitglieder WHERE mitglieder_id=?", [str(person.id)])
-        self.conn.commit()
-        self.logger.info("database updatePerson " + str(person.id))
+                    "DELETE FROM mitglieder WHERE mitglieder_id=?", [str(person.id)])
+            self.conn.commit()
+            self.logger.info("database updatePerson " + str(person.id))
+        except Exception as e:
+            self.logger.error("updatePerson " + str(person.id))
+            self.logger.error(str(e))
 
     def getPersonByID(self, id):
-        personen = []
-        for row in self.cursor.execute("SELECT id,anrede, vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen WHERE id=?", [str(id)]):
-            p = Person(row[1], row[2], row[3], row[4],
-                       row[5], row[6], row[7], row[8], row[9])
-            p.setID(row[0])
-            p.setAbo(row[10])
-            if(self.isKunde(row[0])):
-                p.setKunde(True)
-            if(self.isMitglied(row[0])):
-                p.setMitglied(True)
-            personen.append(p)
-        if(len(personen) == 1):
-            self.logger.info("database getPersonByID " + str(id))
-        else:
-            self.logger.error("database getPersonByID " + str(id))
-            exit(1)
-        return personen[0]
+        try:
+            personen = []
+            for row in self.cursor.execute("SELECT id,anrede, vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen WHERE id=?", [str(id)]):
+                p = Person(row[1], row[2], row[3], row[4],
+                        row[5], row[6], row[7], row[8], row[9])
+                p.setID(row[0])
+                p.setAbo(row[10])
+                if(self.isKunde(row[0])):
+                    p.setKunde(True)
+                if(self.isMitglied(row[0])):
+                    p.setMitglied(True)
+                personen.append(p)
+            if(len(personen) == 1):
+                self.logger.info("database getPersonByID " + str(id))
+            else:
+                self.logger.error("database getPersonByID " + str(id))
+                exit(1)
+            return personen[0]
+        except Exception as e:
+            self.logger.error("getPersonByID " + str(id))
+            self.logger.error(str(e))
+            return Person("","Fehler","","","","","","","")
 
     def getAufgaben(self):
-        aufgaben = []
-        for row in self.cursor.execute("SELECT * FROM aufgaben"):
-            # id, beschreib, zeitpunkt
-            aufgaben.append([row[0], row[1], row[2]])
-        return aufgaben
+        try:
+            aufgaben = []
+            for row in self.cursor.execute("SELECT * FROM aufgaben"):
+                # id, beschreib, zeitpunkt
+                aufgaben.append([row[0], row[1], row[2]])
+            return aufgaben
+        except Exception as e:
+            self.logger.error("getAufgaben " + str(id))
+            self.logger.error(str(e))
+            return []

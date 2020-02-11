@@ -70,20 +70,26 @@ class ExportWindow(QWidget):
             self.destroy()
 
     def selectKunden(self):
-        self.tableView.clearSelection()
-        kunden = self.dbHandler.getKunden()
-        kunden_ids = [k.id for k in kunden]
-        for i in range(len(self.p_id_list)):
-            if self.p_id_list[i] in kunden_ids:
-                self.tableView.selectRow(i)
+        try:
+            self.tableView.clearSelection()
+            kunden = self.dbHandler.getKunden()
+            kunden_ids = [k.id for k in kunden]
+            for i in range(len(self.p_id_list)):
+                if self.p_id_list[i] in kunden_ids:
+                    self.tableView.selectRow(i)
+        except:
+            self.master.logger.error("export: selectKunden")
 
     def selectMitglieder(self):
-        self.tableView.clearSelection()
-        mitglieder = self.dbHandler.getMitglieder()
-        mitglieder_ids = [m.id for m in mitglieder]
-        for i in range(len(self.p_id_list)):
-            if self.p_id_list[i] in mitglieder_ids:
-                self.tableView.selectRow(i)
+        try:
+            self.tableView.clearSelection()
+            mitglieder = self.dbHandler.getMitglieder()
+            mitglieder_ids = [m.id for m in mitglieder]
+            for i in range(len(self.p_id_list)):
+                if self.p_id_list[i] in mitglieder_ids:
+                    self.tableView.selectRow(i)
+        except:
+            self.master.logger.error("export: selectMitglieder")
 
     def export_personen(self):
         if(self.filename.text() == ""):

@@ -50,8 +50,7 @@ class MitgliederWindow(QWidget):
             if('@' in p.email):
                 emails.append(p.email)
             else:
-                # TODO show alert, that not existed
-                pass
+                QMessageBox.warning(self, "Email nicht vollständig","Die Email-Adresse von " + p.vorname + " " + p.nachname + " existiert nicht.\nDas heisst, kein @-Zeichen wurde darin gefunden.")
         clip = QGuiApplication.clipboard()
         clip.setText(";\n".join(emails))
 
@@ -60,8 +59,11 @@ class MitgliederWindow(QWidget):
             self.destroy()
 
     def loadListBox(self, model):
-        self.p_id_list = []
+        try:
+            self.p_id_list = []
 
-        for p in self.dbHandler.getMitglieder():
-            model.appendRow([QStandardItem(str(i)) for i in [p.vorname, p.nachname, p.adresse, p.plz, p.ort]])
-            self.p_id_list.append(p.id)
+            for p in self.dbHandler.getMitglieder():
+                model.appendRow([QStandardItem(str(i)) for i in [p.vorname, p.nachname, p.adresse, p.plz, p.ort]])
+                self.p_id_list.append(p.id)
+        except:
+            self.master.logger.error("mitgliederwindow: fillTable")

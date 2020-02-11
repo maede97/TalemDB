@@ -114,16 +114,19 @@ class MainApplication(QMainWindow):
         QTableView holding all tasks inside it's model
 
         """
-        self.aufgabe_id_list = []
-        tableview = QTableView(self.frame)
-        model = QStandardItemModel(self.frame)
-        tableview.setModel(model)
-        tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        model.setHorizontalHeaderLabels(["Beschreib","Zeitpunkt"])
-        for a in self.dbHandler.getAufgaben():
-            model.appendRow([QStandardItem(str(i)) for i in a[1:]])
-            self.aufgabe_id_list.append(a[0])
-        return tableview
+        try:
+            self.aufgabe_id_list = []
+            tableview = QTableView(self.frame)
+            model = QStandardItemModel(self.frame)
+            tableview.setModel(model)
+            tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            model.setHorizontalHeaderLabels(["Beschreib","Zeitpunkt"])
+            for a in self.dbHandler.getAufgaben():
+                model.appendRow([QStandardItem(str(i)) for i in a[1:]])
+                self.aufgabe_id_list.append(a[0])
+            return tableview
+        except:
+            self.logger.error("showAufgaben")
 
     def keyPressEvent(self, event):
         """
@@ -182,15 +185,18 @@ class MainApplication(QMainWindow):
         --------
         sqlPopup to be called, for self.sqlentry to exist
         """
-        ret = self.dbHandler.executeSQL(self.sqlentry.toPlainText())
-        tableview = QTableView(self.popupsql)
-        self.sql_layout.addWidget(tableview, 3, 0)
-        model = QStandardItemModel(self.popupsql)
-        tableview.setModel(model)
-        tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        for row in ret:
-            model.appendRow([QStandardItem(str(i)) for i in row])
-        self.logger.info("main execSQLPrompt done")
+        try:
+            ret = self.dbHandler.executeSQL(self.sqlentry.toPlainText())
+            tableview = QTableView(self.popupsql)
+            self.sql_layout.addWidget(tableview, 3, 0)
+            model = QStandardItemModel(self.popupsql)
+            tableview.setModel(model)
+            tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            for row in ret:
+                model.appendRow([QStandardItem(str(i)) for i in row])
+            self.logger.info("main execSQLPrompt done")
+        except:
+            pass
 
     def addMenubar(self):
         """
@@ -254,26 +260,29 @@ class MainApplication(QMainWindow):
         """
         Checks for updates
         """
-        self.setStatusTip("Stelle Verbindung mit Server her...")
-        self.update()
-
-        ret = updatechecker.check_for_updates()
-        if(ret == None):
-            self.setStatusTip("Ein Fehler ist aufgetreten.")
-
-        elif(ret):
-            print("No update was found")
-            self.setStatusTip("Keine Updates gefunden.")
-        else:
-            self.setStatusTip("Das Update wird automatisch heruntergeladen.")
+        try:
+            self.setStatusTip("Stelle Verbindung mit Server her...")
             self.update()
-            ret = updatechecker.download_and_export_updates()
-            if(ret):
-                self.setStatusTip("Erfolgreich heruntergeladen. Bitte starte das Programm aus dem neuen Ordner neu.")
-            else:
+
+            ret = updatechecker.check_for_updates()
+            if(ret == None):
                 self.setStatusTip("Ein Fehler ist aufgetreten.")
-            self.logger.info("main downloadUpdates done")
-        self.logger.info("main checkUpdates done")
+
+            elif(ret):
+                print("No update was found")
+                self.setStatusTip("Keine Updates gefunden.")
+            else:
+                self.setStatusTip("Das Update wird automatisch heruntergeladen.")
+                self.update()
+                ret = updatechecker.download_and_export_updates()
+                if(ret):
+                    self.setStatusTip("Erfolgreich heruntergeladen. Bitte starte das Programm aus dem neuen Ordner neu.")
+                else:
+                    self.setStatusTip("Ein Fehler ist aufgetreten.")
+                self.logger.info("main downloadUpdates done")
+            self.logger.info("main checkUpdates done")
+        except:
+            self.logger.error("UpdateCheck: error")
 
     @pyqtSlot()
     def showBestellungen(self):

@@ -14,10 +14,13 @@ class AbonnentenWindow(BestellungsWindow):
         self.setWindowTitle("TalemDB | Abonnenten")
 
     def fillTable(self, model):
-        self.p_id_list = []
-        pers = self.dbHandler.getPersonen('WHERE abonnement=1')
-        # create header
-        for i, p in enumerate(pers):
-            best = self.dbHandler.getBestellungenById(p.id)
-            self.p_id_list.append(p.id)
-            model.appendRow([QStandardItem(str(j)) for j in [p.vorname, p.nachname, best[0], best[1], best[2], best[3]]])
+        try:
+            self.p_id_list = []
+            pers = self.dbHandler.getPersonen('WHERE abonnement=1')
+            # create header
+            for i, p in enumerate(pers):
+                best = self.dbHandler.getBestellungenById(p.id)
+                self.p_id_list.append(p.id)
+                model.appendRow([QStandardItem(str(j)) for j in [p.vorname, p.nachname, best[0], best[1], best[2], best[3]]])
+        except:
+            self.master.logger.error("abowindow: fillTable")

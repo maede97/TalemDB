@@ -77,8 +77,10 @@ class PersonenWindow(QWidget):
 
         msg = QMessageBox.question(self, "Person löschen", "Soll die Person "+p.vorname + " "+p.nachname+" wirklich endgültig gelöscht werden?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if msg == QMessageBox.Yes:
-            self.dbHandler.deletePerson(pid)
-            self.model.removeRow(self.tableView.selectedIndexes()[0].row())
+            if self.dbHandler.deletePerson(pid) == False:
+                QMessageBox.warning(self, "Fehler", "Person konnte nicht gelöscht werden.")
+            else:
+                self.model.removeRow(self.tableView.selectedIndexes()[0].row())
 
     def export_personen(self):
         excelwriter.write_person_array_to_excel(
@@ -89,42 +91,56 @@ class PersonenWindow(QWidget):
         self.p_id_list = []
         model.clear()
         model.setHorizontalHeaderLabels(['Anrede','Vorname', 'Nachname', 'Adresse', 'PLZ', 'Ort','Land','Email','Telefon', 'Kunde', 'Mitglied', 'Abonnent'])
-
-        for p in self.dbHandler.getPersonen():
-            curr = [QStandardItem(str(i)) for i in [p.anrede, p.vorname, p.nachname, p.adresse, p.plz, p.ort, p.land, p.email, p.telefon, int(self.dbHandler.isKunde(p.id)), int(self.dbHandler.isMitglied(p.id)), p.abonnement]]
-            if(self.search_field.text() == ""):
-                model.appendRow(curr)
-                self.p_id_list.append(p.id)
-            elif(self.search_field.text().lower() in ",".join([str(i).lower() for i in [p.anrede, p.vorname, p.nachname, p.adresse, p.plz, p.ort, p.land, p.email, p.telefon, int(self.dbHandler.isKunde(p.id)), int(self.dbHandler.isMitglied(p.id)), p.abonnement]])):
-                model.appendRow(curr)
-                self.p_id_list.append(p.id)
-            else:
-                continue
+        try:
+            for p in self.dbHandler.getPersonen():
+                curr = [QStandardItem(str(i)) for i in [p.anrede, p.vorname, p.nachname, p.adresse, p.plz, p.ort, p.land, p.email, p.telefon, int(self.dbHandler.isKunde(p.id)), int(self.dbHandler.isMitglied(p.id)), p.abonnement]]
+                if(self.search_field.text() == ""):
+                    model.appendRow(curr)
+                    self.p_id_list.append(p.id)
+                elif(self.search_field.text().lower() in ",".join([str(i).lower() for i in [p.anrede, p.vorname, p.nachname, p.adresse, p.plz, p.ort, p.land, p.email, p.telefon, int(self.dbHandler.isKunde(p.id)), int(self.dbHandler.isMitglied(p.id)), p.abonnement]])):
+                    model.appendRow(curr)
+                    self.p_id_list.append(p.id)
+                else:
+                    continue
+        except Exception as e:
+            self.master.logger.error("personenwindow loadListBox")
+            self.master.logger.error(str(e))
+            QMessageBox.warning(self, 'Fehler', "Ein Fehler ist aufgetreten. Personen konnten nicht geladen werden.")
 
     def insert(self):
-        if(self.vorname_field.text() == "" or self.nachname_field.text() == ""):
-            return
+        try:
+            if(self.vorname_field.text() == "" or self.nachname_field.text() == ""):
+                return
 
-        p = Person(self.anrede_field.text(), self.vorname_field.text(), self.nachname_field.text(), self.adresse_field.text(),
-            self.plz_field.text(), self.ort_field.text(), self.land_field.text(), self.email_field.text(), self.telefon_field.text())
+            p = Person(self.anrede_field.text(), self.vorname_field.text(), self.nachname_field.text(), self.adresse_field.text(),
+                self.plz_field.text(), self.ort_field.text(), self.land_field.text(), self.email_field.text(), self.telefon_field.text())
 
-        pid = self.dbHandler.insertPerson(
-            p,
-            int(self.kunden_check.checkState() == Qt.Checked),
-            int(self.mitglieder_check.checkState() == Qt.Checked),
-            int(self.abo_check.checkState() == Qt.Checked))
-        self.window.destroy()
-        self.loadListBox(self.model)
+            pid = self.dbHandler.insertPerson(
+                p,
+                int(self.kunden_check.checkState() == Qt.Checked),
+                int(self.mitglieder_check.checkState() == Qt.Checked),
+                int(self.abo_check.checkState() == Qt.Checked))
+            self.window.destroy()
+            self.loadListBox(self.model)
+        except Exception as e:
+            self.master.logger.error("personenwindow insert")
+            self.master.logger.error(str(e))
+            QMessageBox.warning(self, 'Fehler', "Du hast einen Fehler eingegeben. Bitte überprüfen.")
 
     def update(self, item):
-        row = item.row()
-        if(self.model.item(row, 1).text() == "" or self.model.item(row, 2).text() == ""):
-            return
-        p = Person(self.model.item(row, 0).text(), self.model.item(row, 1).text(), self.model.item(row, 2).text(), self.model.item(row, 3).text(),
-            self.model.item(row, 4).text(), self.model.item(row, 5).text(), self.model.item(row, 6).text(), self.model.item(row, 7).text(),
-            self.model.item(row, 8).text())
-        p.setID(self.p_id_list[row])
-        self.dbHandler.updatePerson(p, int(self.model.item(row,9).text()), int(self.model.item(row,10).text()), int(self.model.item(row,11).text()))
+        try:
+            row = item.row()
+            if(self.model.item(row, 1).text() == "" or self.model.item(row, 2).text() == ""):
+                return
+            p = Person(self.model.item(row, 0).text(), self.model.item(row, 1).text(), self.model.item(row, 2).text(), self.model.item(row, 3).text(),
+                self.model.item(row, 4).text(), self.model.item(row, 5).text(), self.model.item(row, 6).text(), self.model.item(row, 7).text(),
+                self.model.item(row, 8).text())
+            p.setID(self.p_id_list[row])
+            self.dbHandler.updatePerson(p, int(self.model.item(row,9).text()), int(self.model.item(row,10).text()), int(self.model.item(row,11).text()))
+        except Exception as e:
+            self.master.logger.error("personenwindow update")
+            self.master.logger.error(str(e))
+            QMessageBox.warning(self, 'Fehler', "Du hast einen Fehler eingegeben. Bitte überprüfen.")
 
     def neue_person(self):
         self.window = QWidget()
