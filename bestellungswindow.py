@@ -30,6 +30,7 @@ class BestellungsWindow(QWidget):
         tableview.setModel(self.model)
         self.model.setHorizontalHeaderLabels(['Vorname', 'Nachname', 'Dalo', 'Star', 'Dachi', 'Sonstiges'])
         self.fillTable(self.model)
+        self.tableView.setSortingEnabled(True)
         for row in range(0, self.model.rowCount()):
             self.model.item(row,0).setFlags(Qt.ItemIsEnabled)
             self.model.item(row,1).setFlags(Qt.ItemIsEnabled)

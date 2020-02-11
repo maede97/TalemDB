@@ -30,6 +30,7 @@ class ExportWindow(QWidget):
         self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableView.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.tableView.setSortingEnabled(True)
         self.model.setHorizontalHeaderLabels(['Vorname', 'Nachname', 'Adresse', 'PLZ', 'Ort'])
         
         horizontalGroupBox.setLayout(layout)

@@ -41,6 +41,7 @@ class MitgliederWindow(QWidget):
         windowLayout = QVBoxLayout()
         windowLayout.addWidget(horizontalGroupBox)
         self.setLayout(windowLayout)
+        self.tableView.setSortingEnabled(True)
     
     def sendEmail(self):
         """ opens email client to send email to all persons here"""

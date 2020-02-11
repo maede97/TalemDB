@@ -121,6 +121,7 @@ class MainApplication(QMainWindow):
             tableview.setModel(model)
             tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
             model.setHorizontalHeaderLabels(["Beschreib","Zeitpunkt"])
+            tableView.setSortingEnabled(True)
             for a in self.dbHandler.getAufgaben():
                 model.appendRow([QStandardItem(str(i)) for i in a[1:]])
                 self.aufgabe_id_list.append(a[0])

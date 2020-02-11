@@ -47,6 +47,7 @@ class PersonenWindow(QWidget):
         self.model = QStandardItemModel(self)
         self.tableView.setModel(self.model)
         self.tableView.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tableView.setSortingEnabled(True)
         # table header is set in loadListBox
 
         # Connect search field
