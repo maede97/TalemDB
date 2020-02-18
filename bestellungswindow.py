@@ -21,13 +21,15 @@ class BestellungsWindow(QWidget):
         horizontalGroupBox = QGroupBox()
         layout = QGridLayout()
 
-        layout.addWidget(QLabel("Bestellungen", self), 1, 0)
+        self.titleLabel = QLabel("Bestellungen", self)
 
-        tableview = QTableView(self)
-        layout.addWidget(tableview, 2, 0)
+        layout.addWidget(self.titleLabel, 1, 0)
+
+        self.tableView = QTableView(self)
+        layout.addWidget(self.tableView, 2, 0)
         self.model = QStandardItemModel(self)
-        tableview.setSelectionMode(QAbstractItemView.SingleSelection)
-        tableview.setModel(self.model)
+        self.tableView.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tableView.setModel(self.model)
         self.model.setHorizontalHeaderLabels(['Vorname', 'Nachname', 'Dalo', 'Star', 'Dachi', 'Sonstiges'])
         self.fillTable(self.model)
         self.tableView.setSortingEnabled(True)

@@ -109,25 +109,30 @@ class MainApplication(QMainWindow):
         """
         Create a QTableView to show all tasks to do
 
-        Retuns
+        Retunrs
         ------
         QTableView holding all tasks inside it's model
 
         """
         try:
             self.aufgabe_id_list = []
-            tableview = QTableView(self.frame)
+            tableView = QTableView(self.frame)
             model = QStandardItemModel(self.frame)
-            tableview.setModel(model)
-            tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            tableView.setModel(model)
+            tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
             model.setHorizontalHeaderLabels(["Beschreib","Zeitpunkt"])
             tableView.setSortingEnabled(True)
             for a in self.dbHandler.getAufgaben():
                 model.appendRow([QStandardItem(str(i)) for i in a[1:]])
                 self.aufgabe_id_list.append(a[0])
-            return tableview
-        except:
+            return tableView
+        except Exception as e:
             self.logger.error("showAufgaben")
+            self.logger.error(str(e))
+            tableView = QTableView(self.frame)
+            model = QStandardItemModel(self.frame)
+            tableView.setModel(model)
+            return tableView
 
     def keyPressEvent(self, event):
         """
