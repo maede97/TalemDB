@@ -34,7 +34,7 @@ class KundenWindow(QWidget):
         tableview.setEditTriggers(QAbstractItemView.NoEditTriggers)
         model.setHorizontalHeaderLabels(['Vorname', 'Nachname', 'Adresse', 'PLZ', 'Ort'])
         self.loadListBox(model)
-        self.tableView.setSortingEnabled(True)
+        tableview.setSortingEnabled(True)
         
         horizontalGroupBox.setLayout(layout)
         windowLayout = QVBoxLayout()
