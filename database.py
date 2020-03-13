@@ -27,8 +27,13 @@ class DataBase:
         self.cursor.execute(
             "CREATE TABLE IF NOT EXISTS infos(id INTEGER PRIMARY KEY, personen_id INTEGER, zwei_jaehrlich INTEGER DEFAULT 0, kafi_updates INTEGER DEFAULT 0, FOREIGN KEY (personen_id) REFERENCES personen(id))"
         )
+        self.cursor.execute(
+            "CREATE TABLE IF NOT EXISTS bezahlt(id INTEGER PRIMARY KEY, personen_id INTEGER, m1 INTEGER DEFAULT 0, m2 INTEGER DEFAULT 0, m3 INTEGER DEFAULT 0,\
+                m4 INTEGER DEFAULT 0, m5 INTEGER DEFAULT 0, m6 INTEGER DEFAULT 0, m7 INTEGER DEFAULT 0, m8 INTEGER DEFAULT 0, m9 INTEGER DEFAULT 0,\
+                    m10 INTEGER DEFAULT 0, m11 INTEGER DEFAULT 0, m12 INTEGER DEFAULT 0, FOREIGN KEY(personen_id) REFERENCES personen(id))"
+        )
         self.logger.info("database __init__ done")
-    
+
     def getAllPersonenNames(self):
         """returns an array with all vornamen and nachnamen"""
         ret = set()
@@ -50,7 +55,7 @@ class DataBase:
             for row in self.cursor.execute(sql):
                 ret.append(row[:])
             self.logger.info("database executeSQL " + sql)
-            self.conn.commit() 
+            self.conn.commit()
         except Exception as e:
             self.logger.error("executeSQL")
             self.logger.error(str(e))
@@ -59,18 +64,18 @@ class DataBase:
 
     def insertTestData(self):
         p1 = Person("Herr", "Max", "Müller", "Teststrasse 1", "8344",
-                    "Bäretswil", "CH", "email@mail.com", "079 886 12 45")
+                    "Bäretswil", "CH", "email@mail.com", "079 123 45 67")
         p1.setKunde(True)
         p2 = Person("Frau", "Zweiter", "Müller", "Teststrasse 1",
-                    "8344", "Bäretswil", "CH", "email@mail.com", "079 886 12 45")
+                    "8344", "Bäretswil", "CH", "email@mail.com", "079 123 45 67")
         p2.setMitglied(True)
         p3 = Person("Anrede BSP", "Dritter", "Müller", "Teststrasse 1",
-                    "8344", "Bäretswil", "CH", "email@mail.com", "079 886 12 45")
+                    "8344", "Bäretswil", "CH", "email@mail.com", "079 123 45 67")
         p3.setKunde(True)
         p3.setMitglied(True)
 
-        p4 = Person("a","","","","","","","","")
-        id4 = self.insertPerson(p4,False,False)
+        p4 = Person("a", "", "", "", "", "", "", "", "")
+        id4 = self.insertPerson(p4, False, False)
         self.deletePerson(id4)
 
         p1.setAbo(True)
@@ -83,7 +88,6 @@ class DataBase:
         self.updateBestellungen(id1, 1.5, 2.5, 3.5, "Sonstiges")
         self.insertRechnungsData(id1, "rechnung", 12)
         self.logger.info("database insertTestData done")
-
 
     def getBestellungenById(self, id):
         """return array of [dalo,star,dachi] in kg each"""
@@ -102,7 +106,8 @@ class DataBase:
     def insertRechnungsData(self, pid, rechnungsart, rechnungsintervall):
         values = [pid, rechnungsart, rechnungsintervall]
         try:
-            self.cursor.execute("INSERT INTO rechnungen(personen_id, rechnungsart, rechnungsintervall) VALUES (?, ?, ?)", values)
+            self.cursor.execute(
+                "INSERT INTO rechnungen(personen_id, rechnungsart, rechnungsintervall) VALUES (?, ?, ?)", values)
             self.conn.commit()
             self.logger.info("database insertRechnungsData done")
         except Exception as e:
@@ -127,7 +132,8 @@ class DataBase:
             for _ in self.cursor.execute("SELECT * FROM bestellungen WHERE personen_id=?", [str(pid)]):
                 has = True
             if(has):
-                values = [str(dalo), str(star), str(dachi), sonstiges, str(pid)]
+                values = [str(dalo), str(star), str(
+                    dachi), sonstiges, str(pid)]
                 self.cursor.execute(
                     "UPDATE bestellungen SET sorte_dalo=?, sorte_star=?,sorte_dachi=?,sonstiges=? WHERE personen_id=?", values)
             else:
@@ -141,11 +147,15 @@ class DataBase:
 
     def deletePerson(self, pid):
         try:
-            self.cursor.execute("DELETE FROM kunden WHERE kunden_id=?",[str(pid)])
-            self.cursor.execute("DELETE FROM mitglieder WHERE mitglieder_id=?",[str(pid)])
-            self.cursor.execute("DELETE FROM bestellungen WHERE personen_id=?",[str(pid)])
-            self.cursor.execute("DELETE FROM rechnungen WHERE personen_id=?",[str(pid)])
-            self.cursor.execute("DELETE FROM personen WHERE id=?",[str(pid)])
+            self.cursor.execute(
+                "DELETE FROM kunden WHERE kunden_id=?", [str(pid)])
+            self.cursor.execute(
+                "DELETE FROM mitglieder WHERE mitglieder_id=?", [str(pid)])
+            self.cursor.execute(
+                "DELETE FROM bestellungen WHERE personen_id=?", [str(pid)])
+            self.cursor.execute(
+                "DELETE FROM rechnungen WHERE personen_id=?", [str(pid)])
+            self.cursor.execute("DELETE FROM personen WHERE id=?", [str(pid)])
             self.conn.commit()
             self.logger.info("database deletePerson " + str(pid))
             return True
@@ -157,7 +167,7 @@ class DataBase:
     def insertPerson(self, person, kunde=False, mitglied=False, abo=False):
         try:
             values = [person.anrede, person.vorname, person.nachname, person.adresse,
-                    person.plz, person.ort, person.land, person.email, person.telefon, abo]
+                      person.plz, person.ort, person.land, person.email, person.telefon, abo]
             self.cursor.execute(
                 "INSERT INTO personen(anrede,vorname,nachname,adresse,plz,ort,land,email,telefon, abonnement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", values)
             pid = str(self.cursor.lastrowid)
@@ -193,7 +203,7 @@ class DataBase:
             personen = []
             for row in self.cursor.execute("SELECT id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen {} ORDER BY nachname ASC".format(where_clause)):
                 p = Person(row[1], row[2], row[3], row[4],
-                        row[5], row[6], row[7], row[8], row[9])
+                           row[5], row[6], row[7], row[8], row[9])
                 p.setID(row[0])
                 p.setAbo(row[10])
                 personen.append(p)
@@ -209,7 +219,7 @@ class DataBase:
             personen = []
             for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen,kunden WHERE kunden_id = personen.id ORDER BY personen.nachname ASC"):
                 p = Person(row[1], row[2], row[3], row[4],
-                        row[5], row[6], row[7], row[8], row[9])
+                           row[5], row[6], row[7], row[8], row[9])
                 p.setID(row[0])
                 p.setAbo(row[10])
                 personen.append(p)
@@ -225,7 +235,7 @@ class DataBase:
             personen = []
             for row in self.cursor.execute("SELECT personen.id,anrede,vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen,mitglieder WHERE mitglieder_id = personen.id ORDER BY personen.nachname ASC"):
                 p = Person(row[1], row[2], row[3], row[4],
-                        row[5], row[6], row[7], row[8], row[9])
+                           row[5], row[6], row[7], row[8], row[9])
                 p.setID(row[0])
                 p.setAbo(row[10])
                 personen.append(p)
@@ -247,7 +257,6 @@ class DataBase:
             self.logger.error(str(e))
             return False
 
-
     def isMitglied(self, id):
         try:
             self.cursor.execute(
@@ -259,10 +268,21 @@ class DataBase:
             self.logger.error(str(e))
             return False
 
+    def isAbonnent(self, id):
+        try:
+            self.cursor.execute(
+                "SELECT * FROM personen WHERE id=? AND abonnement=1", [str(id)])
+            self.logger.info("database isAbonnent " + str(id))
+            return not self.cursor.fetchone() == None
+        except Exception as e:
+            self.logger.error("isAbonnent " + str(id))
+            self.logger.error(str(e))
+            return False
+
     def updatePerson(self, person, kunde, mitglied, abo):
         try:
             values = [person.anrede, person.vorname, person.nachname, person.adresse,
-                    person.plz, person.ort, person.land, person.email, person.telefon, abo, str(person.id)]
+                      person.plz, person.ort, person.land, person.email, person.telefon, abo, str(person.id)]
             self.cursor.execute(
                 "UPDATE personen SET anrede=?, vorname=?, nachname=?, adresse=?, plz=?, ort=?, land=?, email=?, telefon=?, abonnement=? WHERE id=?", values)
             if kunde:
@@ -291,7 +311,7 @@ class DataBase:
             personen = []
             for row in self.cursor.execute("SELECT id,anrede, vorname,nachname,adresse,plz,ort,land,email,telefon,abonnement FROM personen WHERE id=?", [str(id)]):
                 p = Person(row[1], row[2], row[3], row[4],
-                        row[5], row[6], row[7], row[8], row[9])
+                           row[5], row[6], row[7], row[8], row[9])
                 p.setID(row[0])
                 p.setAbo(row[10])
                 if(self.isKunde(row[0])):
@@ -308,7 +328,7 @@ class DataBase:
         except Exception as e:
             self.logger.error("getPersonByID " + str(id))
             self.logger.error(str(e))
-            return Person("","Fehler","","","","","","","")
+            return Person("", "Fehler", "", "", "", "", "", "", "")
 
     def getAufgaben(self):
         try:
@@ -321,3 +341,70 @@ class DataBase:
             self.logger.error("getAufgaben " + str(id))
             self.logger.error(str(e))
             return []
+    
+    def isInBezahlt(self, pid):
+        try:
+            self.cursor.execute(
+                "SELECT * FROM bezahlt WHERE personen_id=?", [str(pid)])
+            self.logger.info("database isInBezahlt " + str(pid))
+            return not self.cursor.fetchone() == None
+        except Exception as e:
+            self.logger.error("isInBezahlt " + str(pid))
+            self.logger.error(str(e))
+            return False
+
+    def setBezahlt(self, pid, values):
+        try:
+            if(self.isInBezahlt(pid)):
+                # update
+                data = []
+                for i in values:
+                    if(i):
+                        data.append("1")
+                    else:
+                        data.append("0")
+                data.append(str(pid))
+                self.cursor.execute("UPDATE bezahlt SET m1=?, m2=?, m3=?, m4=?, m5=?, m6=?, m7=?, m8=?, m9=?, m10=?, m11=?, m12=? WHERE personen_id=?", data)
+                self.conn.commit()
+                self.logger.info("setBezahlt update " + str(pid))
+            else:
+                # insert new
+                data = [str(pid)]
+                for i in values:
+                    if(i):
+                        data.append("1")
+                    else:
+                        data.append("0")
+                self.cursor.execute("INSERT INTO bezahlt(personen_id, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", data)
+                self.conn.commit()
+                self.logger.info("setBezahlt insert " + str(pid))
+        except Exception as e:
+            self.logger.error("isInBezahlt " + str(pid))
+            self.logger.error(str(e))
+
+    def getBezahlt(self, pid):
+        empty = [False, False, False, False, False, False, False, False, False, False, False, False]
+        try:
+            if(self.isAbonnent(pid)):
+                if(self.isInBezahlt(pid)):
+                    # get data from database
+                    data = []
+                    for row in self.cursor.execute("SELECT * FROM bezahlt WHERE personen_id=?",[str(pid)]):
+                        for i in range(12):
+                            if(int(row[i+2]) == 1):
+                                data.append(True)
+                            else:
+                                data.append(False)
+                        return data # return first occurence, because only one should exist
+                else:
+                    # store empty and return empty
+                    self.setBezahlt(pid, empty)
+                    return empty
+
+            else: # this should never happen
+                return empty
+        except Exception as e:
+            self.logger.error("getBezahlt" + str(pid))
+            self.logger.error(str(e))
+            # all months to false
+            return empty
