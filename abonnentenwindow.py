@@ -22,12 +22,16 @@ class AbonnentenWindow(QWidget):
         horizontalGroupBox = QGroupBox()
         layout = QGridLayout()
 
+        temp = QPushButton("Mailadressen kopieren", self)
+        temp.clicked.connect(self.sendEmail)
+        layout.addWidget(temp, 1, 0)
+
         self.titleLabel = QLabel("Abonnenten", self)
 
-        layout.addWidget(self.titleLabel, 1, 0)
+        layout.addWidget(self.titleLabel, 2, 0)
 
         self.tableView = QTableView(self)
-        layout.addWidget(self.tableView, 2, 0)
+        layout.addWidget(self.tableView, 3, 0)
         self.model = QStandardItemModel(self)
         self.tableView.setSelectionMode(QAbstractItemView.SingleSelection)
         self.tableView.setModel(self.model)
@@ -43,6 +47,17 @@ class AbonnentenWindow(QWidget):
         windowLayout = QVBoxLayout()
         windowLayout.addWidget(horizontalGroupBox)
         self.setLayout(windowLayout)
+
+    def sendEmail(self):
+        emails = []
+        for p in self.dbHandler.getPersonen("WHERE abonnement=1"):
+            # simple check if email even exists
+            if('@' in p.email):
+                emails.append(p.email)
+            else:
+                QMessageBox.warning(self, "Email nicht vollständig","Die Email-Adresse von " + p.vorname + " " + p.nachname + " existiert nicht.\nDas heisst, kein @-Zeichen wurde darin gefunden.")
+        clip = QGuiApplication.clipboard()
+        clip.setText(";\n".join(emails))
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:

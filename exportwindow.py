@@ -62,13 +62,28 @@ class ExportWindow(QWidget):
         button.clicked.connect(self.selectMitglieder)
         layout.addWidget(button, 9, 0)
 
-        layout.addWidget(self.tableView, 10, 0)
+        button = QPushButton("Abonnenten auswählen")
+        button.clicked.connect(self.selectAbonnenten)
+        layout.addWidget(button, 10, 0)
+
+        layout.addWidget(self.tableView, 11, 0)
 
         self.loadListBox(self.model)
         
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             self.destroy()
+
+    def selectAbonnenten(self):
+        try:
+            self.tableView.clearSelection()
+            mitglieder = self.dbHandler.getPersonen("WHERE abonnement=1")
+            mitglieder_ids = [m.id for m in mitglieder]
+            for i in range(len(self.p_id_list)):
+                if self.p_id_list[i] in mitglieder_ids:
+                    self.tableView.selectRow(i)
+        except:
+            self.master.logger.error("export: selectAbonnenten")
 
     def selectKunden(self):
         try:
